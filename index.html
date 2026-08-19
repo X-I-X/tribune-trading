@@ -1,676 +1,616 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-  <title>Tribune Trader — The Science Behind the Trade</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #060608;
-      --bg-panel: #0d0d14;
-      --bg-card: #111118;
-      --border: #1c1c2a;
-      --accent: #c41e3a;
-      --accent-dim: rgba(196,30,58,0.15);
-      --gold: #f5a623;
-      --green: #00e676;
-      --green-dim: rgba(0,230,118,0.12);
-      --red: #ff1744;
-      --red-dim: rgba(255,23,68,0.12);
-      --text: #e0e2e8;
-      --text-dim: #6b7280;
-      --text-muted: #3d4147;
-      --mono: 'IBM Plex Mono', 'Courier New', monospace;
-      --sans: 'IBM Plex Sans', system-ui, sans-serif;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      line-height: 1.6;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tribune Trader — Stan's System. Automated.</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Cinzel:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Tribune Brand System — Tribune Trader adaptation */
+:root {
+  --daylight: #FFFFFF;
+  --marble: #EFEBE2;
+  --obsidian: #0A0B12;
+  --basalt: #16141F;
+  --ash: #8C8896;
+  --tyrian: #7A1A5C;
+  --tyrian-deep: #4E0E3C;
+  --murex: #B44BC0;
+  --aurum: #C6A35A;
+  --green: #1A7A3C;
+  --green-bg: #EAF5EE;
+  --amber: #A05800;
+  --amber-bg: #FFF5E6;
+  --error: #E24B4A;
+  --line: rgba(10,11,18,.12);
+  --line-strong: rgba(10,11,18,.24);
+  --line-inv: rgba(239,235,226,.18);
+  --max-width: 1140px;
+  --section-pad: 88px;
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --display: 'Archivo', sans-serif;
+  --body: 'Inter', sans-serif;
+  --roman: 'Cinzel', serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--daylight); color: var(--basalt); font-family: var(--body); font-size: 16.5px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+img, svg { display: block; }
+a { color: var(--tyrian-deep); text-decoration: none; }
+a:hover { text-decoration: underline; color: var(--tyrian); }
+:focus-visible { outline: 2px solid var(--murex); outline-offset: 2px; border-radius: 2px; }
+.wrap { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+section { padding: var(--section-pad) 0; }
+@media(max-width: 768px) { section { padding: 56px 0; } }
+h1, h2, h3 { font-family: var(--display); color: var(--obsidian); font-weight: 700; line-height: 1.1; }
+h1 { font-size: clamp(34px, 4.4vw, 48px); line-height: 1.08; }
+h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 700; line-height: 1.15; }
+h3 { font-size: 19px; font-weight: 600; line-height: 1.3; }
+.display-xl { font-size: clamp(40px, 5.6vw, 64px); line-height: 1.05; letter-spacing: -.01em; font-weight: 800; }
+p { max-width: 66ch; }
+.lead { font-size: 19px; color: var(--basalt); line-height: 1.6; }
+.muted { color: var(--ash); font-size: 15px; }
+.accent { color: var(--tyrian-deep); }
+.eyebrow { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .32em; text-transform: uppercase; color: var(--ash); border-left: 3px solid var(--tyrian); padding-left: 12px; margin-bottom: 20px; display: inline-block; }
 
-    /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2rem; height: 52px;
-      background: rgba(6,6,8,0.95);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(10px);
-    }
-    .nav-logo {
-      font-family: var(--mono);
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      color: var(--gold);
-    }
-    .nav-logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 2rem; }
-    .nav-links a {
-      font-family: var(--mono); font-size: 0.75rem;
-      letter-spacing: 0.1em; color: var(--text-dim);
-      text-decoration: none; text-transform: uppercase;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover, .nav-links a.active { color: var(--text); }
-    .nav-cta {
-      background: var(--accent); color: #fff;
-      padding: 0.4rem 1rem; border-radius: 2px;
-      font-family: var(--mono); font-size: 0.7rem;
-      letter-spacing: 0.1em; text-decoration: none;
-      text-transform: uppercase; font-weight: 600;
-      transition: opacity 0.2s;
-    }
-    .nav-cta:hover { opacity: 0.85; }
+/* Buttons */
+.btn { display: inline-block; font-family: var(--display); font-weight: 600; font-size: 15px; padding: 13px 26px; border-radius: var(--radius-control); border: 1px solid transparent; cursor: pointer; transition: background .2s, border-color .2s, color .2s; text-decoration: none; }
+.btn:hover { text-decoration: none; }
+.btn-primary { background: var(--tyrian); color: var(--marble); }
+.btn-primary:hover { background: var(--murex); color: var(--obsidian); }
+.btn-secondary { background: transparent; border-color: var(--line-strong); color: var(--obsidian); }
+.btn-secondary:hover { border-color: var(--obsidian); }
+.btn-ghost { background: none; border: none; color: var(--tyrian-deep); padding: 13px 8px; font-family: var(--display); font-weight: 600; font-size: 15px; cursor: pointer; }
+.btn-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-top: 32px; }
 
-    /* HERO */
-    .hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 6rem 2rem 4rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(196,30,58,0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-tag {
-      font-family: var(--mono); font-size: 0.7rem;
-      letter-spacing: 0.2em; color: var(--accent);
-      text-transform: uppercase; margin-bottom: 1.5rem;
-      border: 1px solid var(--accent-dim);
-      padding: 0.3rem 0.8rem; border-radius: 2px;
-      display: inline-block;
-    }
-    .hero h1 {
-      font-size: clamp(2.4rem, 6vw, 4.5rem);
-      font-weight: 700; line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
-    }
-    .hero h1 span { color: var(--accent); }
-    .hero-sub {
-      font-size: 1.1rem; color: var(--text-dim);
-      max-width: 560px; margin: 0 auto 3rem;
-      font-weight: 300;
-    }
-    .hero-stats {
-      display: flex; gap: 3rem; justify-content: center;
-      margin-bottom: 3.5rem; flex-wrap: wrap;
-    }
-    .stat {
-      text-align: center;
-    }
-    .stat-value {
-      display: block;
-      font-family: var(--mono); font-size: 2rem;
-      font-weight: 600; color: var(--gold);
-    }
-    .stat-label {
-      font-size: 0.7rem; color: var(--text-dim);
-      letter-spacing: 0.1em; text-transform: uppercase;
-    }
-    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-    .btn-primary {
-      background: var(--accent); color: #fff;
-      padding: 0.85rem 2rem; border-radius: 2px;
-      font-family: var(--mono); font-size: 0.8rem;
-      letter-spacing: 0.1em; text-decoration: none;
-      text-transform: uppercase; font-weight: 600;
-      transition: opacity 0.2s; display: inline-flex;
-      align-items: center; gap: 0.5rem;
-    }
-    .btn-primary:hover { opacity: 0.85; }
-    .btn-secondary {
-      background: transparent; color: var(--text-dim);
-      padding: 0.85rem 2rem; border-radius: 2px;
-      font-family: var(--mono); font-size: 0.8rem;
-      letter-spacing: 0.1em; text-decoration: none;
-      text-transform: uppercase; border: 1px solid var(--border);
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .btn-secondary:hover { color: var(--text); border-color: var(--text-dim); }
+/* Header */
+.m-header { border-bottom: 1px solid var(--line); background: var(--daylight); position: sticky; top: 0; z-index: 50; }
+.m-header .wrap { display: flex; justify-content: space-between; align-items: center; height: 68px; }
+.lockup { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.lockup:hover { text-decoration: none; }
+.lockup svg { height: 32px; width: auto; }
+.wordmark { font-family: var(--display); font-weight: 700; letter-spacing: .15em; font-size: 16px; color: var(--obsidian); }
+.wordmark span { color: var(--ash); font-weight: 400; letter-spacing: .08em; }
+.m-nav { display: flex; gap: 32px; align-items: center; }
+.m-nav a { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: var(--obsidian); text-decoration: none; }
+.m-nav a:hover { color: var(--tyrian-deep); text-decoration: none; }
+.phase-pill { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: rgba(122,26,92,.08); color: var(--tyrian-deep); border: 1px solid rgba(122,26,92,.2); }
+@media(max-width: 768px) { .m-nav { gap: 18px; } .wordmark span { display: none; } }
 
-    /* SECTION */
-    section {
-      padding: 6rem 2rem;
-      max-width: 1100px; margin: 0 auto;
-    }
-    .section-tag {
-      font-family: var(--mono); font-size: 0.65rem;
-      letter-spacing: 0.2em; color: var(--accent);
-      text-transform: uppercase; margin-bottom: 0.8rem;
-    }
-    .section-title {
-      font-size: 2rem; font-weight: 700;
-      letter-spacing: -0.02em; margin-bottom: 1rem;
-    }
-    .section-sub {
-      font-size: 1rem; color: var(--text-dim);
-      max-width: 560px; margin-bottom: 3rem; font-weight: 300;
-    }
-    .divider {
-      border: none; border-top: 1px solid var(--border);
-      margin: 0 2rem;
-    }
+/* Hero */
+.hero { padding: 80px 0 72px; background: var(--daylight); position: relative; overflow: hidden; }
+.hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: var(--line); }
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+@media(max-width: 840px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } }
+.hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius-card); overflow: hidden; }
+.hero-stat { background: var(--marble); padding: 20px 24px; }
+.hero-stat-value { font-family: var(--display); font-size: 28px; font-weight: 800; color: var(--obsidian); line-height: 1; margin-bottom: 4px; }
+.hero-stat-value span { color: var(--tyrian); }
+.hero-stat-label { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ash); }
 
-    /* SYSTEM SECTION — two cards */
-    .system-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 1.5px;
-    }
-    @media (max-width: 700px) { .system-grid { grid-template-columns: 1fr; } }
-    .sys-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      padding: 2rem;
-    }
-    .sys-card-num {
-      font-family: var(--mono); font-size: 0.65rem;
-      color: var(--text-muted); letter-spacing: 0.15em;
-      margin-bottom: 1rem;
-    }
-    .sys-card-title {
-      font-size: 1.1rem; font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .sys-card-sub {
-      font-size: 0.85rem; color: var(--text-dim);
-      margin-bottom: 1.5rem; line-height: 1.7;
-    }
-    .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .tag {
-      font-family: var(--mono); font-size: 0.65rem;
-      padding: 0.2rem 0.6rem; border-radius: 2px;
-      letter-spacing: 0.05em; text-transform: uppercase;
-    }
-    .tag-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,230,118,0.2); }
-    .tag-gold { background: rgba(245,166,35,0.1); color: var(--gold); border: 1px solid rgba(245,166,35,0.2); }
-    .tag-dim { background: var(--bg-panel); color: var(--text-dim); border: 1px solid var(--border); }
+/* Cards */
+.card { background: var(--marble); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 32px; }
+.card-accent { border-left: 4px solid var(--tyrian); }
+.grid { display: grid; gap: 20px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-5 { grid-template-columns: repeat(5, 1fr); }
+@media(max-width: 960px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
+@media(max-width: 700px) { .grid-2, .grid-3, .grid-5 { grid-template-columns: 1fr; } }
 
-    /* SIGNAL STATES */
-    .states-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 1px; margin-top: 2rem;
-    }
-    @media (max-width: 600px) { .states-grid { grid-template-columns: 1fr; } }
-    .state-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      padding: 1.5rem; text-align: center;
-    }
-    .state-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      display: inline-block; margin-bottom: 0.8rem;
-    }
-    .state-dot.green { background: var(--green); box-shadow: 0 0 12px var(--green); }
-    .state-dot.amber { background: var(--gold); box-shadow: 0 0 12px var(--gold); }
-    .state-dot.dim { background: var(--text-muted); }
-    .state-label {
-      font-family: var(--mono); font-size: 0.7rem;
-      font-weight: 600; letter-spacing: 0.15em;
-      text-transform: uppercase; display: block; margin-bottom: 0.5rem;
-    }
-    .state-label.green { color: var(--green); }
-    .state-label.amber { color: var(--gold); }
-    .state-label.dim { color: var(--text-muted); }
-    .state-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; }
+/* Seam */
+.seam { border: none; border-top: 1px solid var(--line); margin: 0; }
 
-    /* VISION — 4 steps */
-    .vision-steps {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 1px; position: relative;
-    }
-    @media (max-width: 800px) { .vision-steps { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 480px) { .vision-steps { grid-template-columns: 1fr; } }
-    .vision-step {
-      background: var(--bg-card); border: 1px solid var(--border);
-      padding: 2rem 1.5rem; position: relative;
-    }
-    .vision-step::before {
-      content: attr(data-num);
-      font-family: var(--mono); font-size: 0.6rem;
-      color: var(--text-muted); letter-spacing: 0.15em;
-      display: block; margin-bottom: 1rem;
-    }
-    .vision-step h3 {
-      font-size: 1rem; font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .vision-step p {
-      font-size: 0.82rem; color: var(--text-dim);
-      line-height: 1.7;
-    }
-    .vision-step .step-icon {
-      font-size: 1.5rem; margin-bottom: 0.8rem;
-      display: block;
-    }
-    .vision-step.active-step {
-      border-color: var(--accent);
-    }
-    .vision-step.active-step::after {
-      content: 'IN PROGRESS';
-      position: absolute; top: 1rem; right: 1rem;
-      font-family: var(--mono); font-size: 0.55rem;
-      color: var(--accent); letter-spacing: 0.1em;
-      border: 1px solid var(--accent-dim);
-      padding: 0.15rem 0.4rem; border-radius: 2px;
-    }
+/* Tag badges */
+.tag { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--basalt); }
+.tag-tyrian { background: rgba(122,26,92,.08); color: var(--tyrian-deep); border-color: rgba(122,26,92,.2); }
+.tag-green { background: var(--green-bg); color: var(--green); border-color: rgba(26,122,60,.2); }
+.tag-amber { background: var(--amber-bg); color: var(--amber); border-color: rgba(160,88,0,.2); }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 
-    /* DASHBOARD PREVIEW */
-    .dashboard-preview {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 4px; overflow: hidden;
-      margin-top: 2rem;
-    }
-    .preview-bar {
-      background: var(--bg-panel); padding: 0.6rem 1rem;
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 1rem;
-    }
-    .preview-dots { display: flex; gap: 0.4rem; }
-    .preview-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-    }
-    .preview-dot.red { background: #ff5f56; }
-    .preview-dot.amber { background: #ffbd2e; }
-    .preview-dot.green { background: #27c93f; }
-    .preview-url {
-      font-family: var(--mono); font-size: 0.65rem;
-      color: var(--text-muted);
-    }
-    .preview-content {
-      padding: 2rem;
-      display: grid; grid-template-columns: 2fr 1fr;
-      grid-template-rows: auto auto;
-      gap: 1rem; min-height: 220px;
-    }
-    @media (max-width: 600px) { .preview-content { grid-template-columns: 1fr; } }
-    .preview-panel {
-      background: var(--bg-panel); border: 1px solid var(--border);
-      padding: 0.8rem; border-radius: 2px;
-    }
-    .preview-panel-header {
-      font-family: var(--mono); font-size: 0.55rem;
-      color: var(--text-muted); letter-spacing: 0.12em;
-      text-transform: uppercase; margin-bottom: 0.5rem;
-    }
-    .preview-chart-mock {
-      height: 80px;
-      display: flex; align-items: flex-end; gap: 2px;
-    }
-    .preview-bar-item {
-      flex: 1; background: var(--border); border-radius: 1px;
-      opacity: 0.6;
-    }
-    .preview-osc-mock {
-      height: 60px; position: relative;
-    }
-    .preview-osc-line {
-      position: absolute; inset: 0;
-      background: linear-gradient(90deg, rgba(0,230,118,0.3) 0%, rgba(0,230,118,0.6) 100%);
-      clip-path: polygon(0% 70%, 15% 30%, 30% 50%, 50% 20%, 70% 45%, 85% 25%, 100% 60%);
-    }
-    .preview-signal {
-      display: flex; align-items: center; justify-content: center;
-      height: 80px;
-    }
-    .preview-signal-text {
-      font-family: var(--mono); font-size: 0.75rem;
-      color: var(--green); letter-spacing: 0.1em;
-      font-weight: 600;
-    }
+/* Dark section */
+.dark-section { background: var(--obsidian); color: var(--marble); padding: var(--section-pad) 0; }
+.dark-section h2, .dark-section h3 { color: var(--marble); }
+.dark-section p { color: rgba(239,235,226,.75); }
+.dark-section .eyebrow { color: rgba(239,235,226,.4); border-left-color: var(--murex); }
 
-    /* CTA SECTION */
-    .cta-section {
-      background: var(--bg-card); border: 1px solid var(--border);
-      padding: 4rem 2rem; text-align: center;
-    }
-    .cta-section h2 {
-      font-size: 2rem; font-weight: 700;
-      margin-bottom: 1rem; letter-spacing: -0.02em;
-    }
-    .cta-section p {
-      font-size: 0.95rem; color: var(--text-dim);
-      max-width: 480px; margin: 0 auto 2rem;
-    }
+/* Signal states */
+.signal-card { padding: 28px 32px; border-radius: var(--radius-card); border: 1px solid var(--line); }
+.signal-card.confirmed { background: var(--green-bg); border-color: rgba(26,122,60,.25); }
+.signal-card.conflicted { background: var(--amber-bg); border-color: rgba(160,88,0,.2); }
+.signal-card.neutral { background: var(--marble); }
+.signal-label { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.signal-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.signal-card.confirmed .signal-dot { background: #1A7A3C; }
+.signal-card.conflicted .signal-dot { background: #A05800; }
+.signal-card.neutral .signal-dot { background: var(--ash); }
+.signal-card.confirmed .signal-label { color: var(--green); }
+.signal-card.conflicted .signal-label { color: var(--amber); }
+.signal-card.neutral .signal-label { color: var(--ash); }
 
-    /* FOOTER */
-    footer {
-      padding: 2rem;
-      border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 1rem;
-    }
-    .footer-logo {
-      font-family: var(--mono); font-size: 0.75rem;
-      color: var(--text-muted); letter-spacing: 0.15em;
-    }
-    .footer-disclaimer {
-      font-family: var(--mono); font-size: 0.6rem;
-      color: var(--text-muted); letter-spacing: 0.05em;
-    }
-  </style>
+/* Step/roadmap */
+.step-card { padding: 28px 24px; background: var(--marble); border: 1px solid var(--line); border-radius: var(--radius-card); position: relative; }
+.step-num { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: var(--ash); text-transform: uppercase; margin-bottom: 12px; }
+.step-name { font-family: var(--display); font-size: 17px; font-weight: 700; color: var(--obsidian); margin-bottom: 8px; }
+.step-desc { font-size: 14.5px; color: var(--ash); line-height: 1.6; }
+.step-status { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; margin-top: 12px; }
+.status-active { background: rgba(122,26,92,.1); color: var(--tyrian-deep); border: 1px solid rgba(122,26,92,.2); }
+.status-upcoming { background: transparent; color: var(--ash); border: 1px solid var(--line); }
+.step-card.active { border-color: var(--tyrian); }
+.step-card.active .step-name { color: var(--tyrian-deep); }
+
+/* Dashboard preview (in dark section) */
+.preview-terminal { background: #0c0c14; border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius-card); overflow: hidden; margin-top: 40px; }
+.preview-terminal-bar { background: #111118; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 8px; }
+.preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+.preview-panels { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto auto; gap: 1px; background: rgba(255,255,255,.05); min-height: 220px; }
+@media(max-width: 700px) { .preview-panels { grid-template-columns: 1fr; } }
+.preview-panel { background: #0f0f18; padding: 16px; }
+.preview-panel-label { font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: 10px; }
+.preview-chart { display: flex; align-items: flex-end; gap: 2px; height: 70px; }
+.preview-bar { flex: 1; border-radius: 1px 1px 0 0; opacity: .7; }
+.preview-osc-wave { height: 60px; position: relative; overflow: hidden; }
+.preview-signal { display: flex; align-items: center; justify-content: center; height: 60px; }
+.preview-confirmed { font-family: var(--mono); font-size: 14px; letter-spacing: .2em; color: #00c853; font-weight: 500; }
+.preview-meter { height: 8px; background: rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; margin-top: 8px; }
+.preview-meter-fill { height: 100%; border-radius: 4px; }
+
+/* Scale table for TickStrike */
+.ts-scale { width: 100%; border-collapse: collapse; font-size: 14.5px; margin-top: 20px; }
+.ts-scale th { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ash); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line-strong); }
+.ts-scale td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.ts-scale tr:last-child td { border-bottom: none; }
+.ts-level { font-family: var(--mono); font-weight: 500; font-size: 14px; color: var(--obsidian); }
+.ts-bar-mini { height: 6px; border-radius: 3px; display: inline-block; }
+
+/* Comparison cards */
+.compare-card { background: var(--marble); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 32px; }
+.compare-card h3 { font-size: 17px; margin-bottom: 4px; }
+.compare-label { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--ash); margin-bottom: 16px; display: block; }
+.pro-con-list { list-style: none; margin-top: 16px; }
+.pro-con-list li { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; display: flex; align-items: flex-start; gap: 8px; }
+.pro-con-list li:last-child { border-bottom: none; }
+.pro-icon { color: var(--green); flex-shrink: 0; font-size: 13px; margin-top: 2px; }
+.con-icon { color: var(--amber); flex-shrink: 0; font-size: 13px; margin-top: 2px; }
+
+/* Firm cards */
+.firm-card { background: var(--marble); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 28px; }
+.firm-name { font-family: var(--display); font-size: 20px; font-weight: 700; color: var(--obsidian); margin-bottom: 4px; }
+.firm-status { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.firm-status.permitted { color: var(--green); }
+
+/* About entities */
+.entity-card { background: var(--marble); border: 1px solid var(--line); border-radius: var(--radius-card); padding: 32px; border-top: 4px solid var(--tyrian); }
+.entity-label { font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ash); margin-bottom: 8px; }
+
+/* Info box */
+.info-box { background: var(--marble); border: 1px solid var(--line); border-radius: var(--radius-card); border-left: 4px solid var(--tyrian); padding: 20px 24px; font-size: 14.5px; color: var(--ash); line-height: 1.7; }
+
+/* Footer */
+footer { padding: 40px 0; border-top: 1px solid var(--line); }
+footer .wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.footer-brand { display: flex; align-items: center; gap: 10px; }
+.footer-brand svg { height: 22px; width: auto; }
+.footer-wordmark { font-family: var(--display); font-size: 13px; font-weight: 700; letter-spacing: .18em; color: var(--ash); }
+.footer-disclaimer { font-family: var(--mono); font-size: 11px; color: var(--ash); letter-spacing: .06em; line-height: 1.6; max-width: 540px; text-align: right; }
+@media(max-width: 700px) { .footer-disclaimer { text-align: left; } }
+
+/* Oscillator scale visual */
+.osc-scale { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--line); border-radius: var(--radius-card); overflow: hidden; margin-top: 20px; }
+.osc-zone { padding: 9px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
+.osc-zone-label { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.zone-bull-strong { background: rgba(26,122,60,.14); }
+.zone-bull-weak { background: rgba(26,122,60,.06); }
+.zone-neutral { background: var(--marble); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.zone-bear-weak { background: rgba(224,75,74,.06); }
+.zone-bear-strong { background: rgba(224,75,74,.14); }
+
+/* Motto */
+.motto { font-family: var(--roman); font-weight: 600; letter-spacing: .28em; color: var(--aurum); font-size: 14px; text-transform: uppercase; }
+</style>
 </head>
 <body>
 
-  <nav>
-    <div class="nav-logo">TRIBUNE <span>TRADER</span></div>
-    <div class="nav-links">
-      <a href="index.html" class="active">SYSTEM</a>
-      <a href="dashboard.html">DASHBOARD</a>
-    </div>
-    <a href="dashboard.html" class="nav-cta">Live Dashboard →</a>
-  </nav>
-
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-tag">Tribune Inc. — Internal Preview</div>
-    <h1>30 years of edge.<br><span>Now we teach a machine.</span></h1>
-    <p class="hero-sub">Stan Smidt traded NASDAQ futures for 30 years. Tribune Trader is building the system to capture, codify, and ultimately surpass what he knows.</p>
-    <div class="hero-stats">
-      <div class="stat">
-        <span class="stat-value">30+</span>
-        <span class="stat-label">Years of Trading Data</span>
-      </div>
-      <div class="stat">
-        <span class="stat-value">~$1K</span>
-        <span class="stat-label">Daily Target / Contract</span>
-      </div>
-      <div class="stat">
-        <span class="stat-value">2</span>
-        <span class="stat-label">Primary Signal Layers</span>
-      </div>
-      <div class="stat">
-        <span class="stat-value">1h</span>
-        <span class="stat-label">Stan's Session / Day</span>
-      </div>
-    </div>
-    <div class="hero-actions">
-      <a href="dashboard.html" class="btn-primary">→ Live Dashboard</a>
-      <a href="#system" class="btn-secondary">The System</a>
-    </div>
+<!-- HEADER -->
+<header class="m-header">
+  <div class="wrap">
+    <a class="lockup" href="/">
+      <svg viewBox="0 0 100 112" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tribune">
+        <rect x="18" y="10" width="64" height="16" rx="2" fill="#0A0B12"/>
+        <polygon points="18,33 46,33 46,86 37,86 18,60" fill="#0A0B12"/>
+        <polygon points="54,33 82,33 82,60 63,86 54,86" fill="#0A0B12"/>
+        <polygon points="40,90 60,90 50,104" fill="#7A1A5C"/>
+      </svg>
+      <span class="wordmark">TRIBUNE <span>TRADER</span></span>
+    </a>
+    <nav class="m-nav">
+      <a href="#edge">The System</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#vision">Roadmap</a>
+      <a href="#firms">Execution</a>
+      <a href="dashboard.html" class="btn btn-primary" style="padding:9px 20px; font-size:14px;">Live Dashboard →</a>
+    </nav>
   </div>
+</header>
 
-  <hr class="divider">
-
-  <!-- THE SYSTEM -->
-  <section id="system">
-    <div class="section-tag">01 / The System</div>
-    <h2 class="section-title">Two Layers. One Edge.</h2>
-    <p class="section-sub">Stan's system has never been taught in a textbook. It emerged from 30 years on the NASDAQ futures desk — and two instruments he trusts above everything else.</p>
-    <div class="system-grid">
-      <div class="sys-card">
-        <div class="sys-card-num">LAYER 01 — PRIMARY SIGNAL</div>
-        <div class="sys-card-title">S949 Cyclical Momentum Oscillator</div>
-        <p class="sys-card-sub">Developed by Rob Mitchell — one of the largest S&P futures traders in the 1980s. Stan got it personally. The S949 measures the rate of change in momentum across the market's natural cycle. Its signature: a ±40 oscillator that peaks and troughs in sync with price swings. The core trade is <strong>divergence</strong> — when price moves one way and momentum moves the other.</p>
-        <div class="tag-row">
-          <span class="tag tag-gold">±40 Scale</span>
-          <span class="tag tag-green">Type 2 Divergence</span>
-          <span class="tag tag-dim">NinjaTrader</span>
-          <span class="tag tag-dim">Gann Swing</span>
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">Tribune Inc. — Internal Preview</div>
+        <h1 class="display-xl">30 years of edge.<br><span class="accent">Now we teach<br>a machine.</span></h1>
+        <p class="lead" style="margin-top: 24px; max-width: 52ch;">Stan Smidt traded NASDAQ futures for 30 years. Tribune Trader is building the system to capture, codify, and ultimately surpass what he knows.</p>
+        <div class="btn-row">
+          <a href="dashboard.html" class="btn btn-primary">Open Live Dashboard →</a>
+          <a href="#edge" class="btn btn-ghost">The System</a>
         </div>
       </div>
-      <div class="sys-card">
-        <div class="sys-card-num">LAYER 02 — REAL-TIME CONFIRMATION</div>
-        <div class="sys-card-title">TickStrike Order Flow Meter</div>
-        <p class="sys-card-sub">FinancialJuice's TickStrike tells you what the algos are doing right now — in real time, before the candle closes. Visual (green = buying, red = selling, 8-14 scale) and audio (sparse ticks vs machine-gun selling). Stan: <em>"Nothing tells you what's going on right this second except order flow."</em> The oscillator asks where the market is. TickStrike answers what's happening inside it.</p>
+      <div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value">30<span>+</span></div>
+            <div class="hero-stat-label">Years Trading NQ</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">~$1<span>K</span></div>
+            <div class="hero-stat-label">Daily Target / Contract</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">2</div>
+            <div class="hero-stat-label">Primary Signal Layers</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">&lt;1<span>h</span></div>
+            <div class="hero-stat-label">Stan's Session / Day</div>
+          </div>
+        </div>
+        <p class="muted" style="margin-top: 16px; font-family: var(--mono); font-size: 12px; letter-spacing: .06em;">Phase 1 — In Progress &nbsp;|&nbsp; Monitoring &amp; knowledge capture</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="seam">
+
+<!-- THE EDGE — STAN'S SYSTEM -->
+<section id="edge">
+  <div class="wrap">
+    <div class="eyebrow">01 — The Edge</div>
+    <h2>Two layers. One system. Thirty years of proof.</h2>
+    <p style="margin-top: 16px; max-width: 60ch; color: var(--ash);">Stan's system has never been documented — until now. It operates through two instruments he trusts above everything else, each answering a different question at a different resolution.</p>
+
+    <div class="grid grid-2" style="margin-top: 40px;">
+
+      <!-- S949 -->
+      <div class="card card-accent">
+        <div class="eyebrow" style="margin-bottom: 16px;">Layer 01 — Primary Signal</div>
+        <h3>S949 Cyclical Momentum Oscillator</h3>
+        <p style="margin-top: 12px; font-size: 15px; color: var(--ash);">Developed by Rob Mitchell — one of the largest S&P futures traders of the 1980s. Stan received it personally. The S949 measures momentum's rate of change across the market's natural cycle. Its signature insight: price and momentum diverge before a reversal confirms.</p>
+        <p style="margin-top: 14px; font-size: 15px; color: var(--ash);">Stan's analogy: a rocket reaching its apex still appears to be climbing — but the fuel is spent. The oscillator shows this before price does.</p>
+
+        <div class="osc-scale">
+          <div class="osc-zone zone-bull-strong">
+            <span style="font-size:13px; color: var(--green); font-weight:600;">+40 to +20</span>
+            <span class="osc-zone-label" style="color:var(--green);">Strong Bullish</span>
+          </div>
+          <div class="osc-zone zone-bull-weak">
+            <span style="font-size:13px; color: #2d7a3c;">+20 to 0</span>
+            <span class="osc-zone-label" style="color:var(--ash);">Weakening Bullish</span>
+          </div>
+          <div class="osc-zone zone-neutral">
+            <span style="font-size:13px; font-weight:600;">0</span>
+            <span class="osc-zone-label" style="color:var(--ash);">Neutral / Transition</span>
+          </div>
+          <div class="osc-zone zone-bear-weak">
+            <span style="font-size:13px; color: #a05050;">0 to -20</span>
+            <span class="osc-zone-label" style="color:var(--ash);">Weakening Bearish</span>
+          </div>
+          <div class="osc-zone zone-bear-strong">
+            <span style="font-size:13px; color: var(--error); font-weight:600;">-20 to -40</span>
+            <span class="osc-zone-label" style="color:var(--error);">Strong Bearish</span>
+          </div>
+        </div>
+
+        <div class="tag-row">
+          <span class="tag tag-tyrian">Type 2 Divergence</span>
+          <span class="tag tag-tyrian">Gann Swing</span>
+          <span class="tag">NinjaTrader</span>
+          <span class="tag">±40 Scale</span>
+        </div>
+      </div>
+
+      <!-- TickStrike -->
+      <div class="card card-accent">
+        <div class="eyebrow" style="margin-bottom: 16px;">Layer 02 — Real-Time Confirmation</div>
+        <h3>TickStrike Order Flow Meter</h3>
+        <p style="margin-top: 12px; font-size: 15px; color: var(--ash);">FinancialJuice's TickStrike captures what's happening inside the market right now — before the candle closes. Visual (green = buying, red = selling) and audio (sparse ticks vs machine-gun cadence). Stan: <em>"Nothing tells you what's going on right this second except order flow."</em></p>
+        <p style="margin-top: 12px; font-size: 15px; color: var(--ash);">What it's detecting: institutional algorithmic activity. BofA, Wells Fargo hedging their books. The big money before it shows up in price.</p>
+
+        <table class="ts-scale">
+          <thead><tr><th>Level</th><th>Label</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td class="ts-level" style="color:var(--ash);">&lt; 8</td><td>Low</td><td style="font-size:14px; color:var(--ash);">Minimal pressure — algos not engaged</td></tr>
+            <tr><td class="ts-level" style="color:var(--amber);">8</td><td>Probing</td><td style="font-size:14px; color:var(--ash);">Warning level — testing, not committed</td></tr>
+            <tr><td class="ts-level">9 – 10</td><td>Active</td><td style="font-size:14px; color:var(--ash);">Meaningful — watchable</td></tr>
+            <tr><td class="ts-level" style="color:var(--green); font-weight:700;">11 – 14</td><td style="color:var(--green); font-weight:600;">Sweet Spot ✓</td><td style="font-size:14px; color:var(--green);">Decisive institutional aggression</td></tr>
+            <tr><td class="ts-level" style="color:var(--error);">&gt; 14</td><td>Extreme</td><td style="font-size:14px; color:var(--ash);">May signal exhaustion</td></tr>
+          </tbody>
+        </table>
+
         <div class="tag-row">
           <span class="tag tag-green">11-14 Sweet Spot</span>
-          <span class="tag tag-dim">FinancialJuice</span>
-          <span class="tag tag-dim">Sub-Candle Timing</span>
-          <span class="tag tag-dim">Audio Channel</span>
+          <span class="tag">FinancialJuice</span>
+          <span class="tag">Sub-Candle Timing</span>
+          <span class="tag">Visual + Audio</span>
         </div>
       </div>
     </div>
 
-    <!-- SIGNAL STATES -->
-    <div style="margin-top: 3rem;">
-      <div class="section-tag">Signal Interpretation</div>
-      <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Three States. Every Second.</h3>
-      <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0;">Oscillator sets the setup. TickStrike confirms or cancels it.</p>
-      <div class="states-grid">
-        <div class="state-card">
-          <span class="state-dot green"></span>
-          <span class="state-label green">Confirmed</span>
-          <p class="state-desc">Oscillator BUY signal + TickStrike green 10-14 in same direction. Highest-probability entry. Both layers agree.</p>
+    <!-- Signal States -->
+    <div style="margin-top: 48px;">
+      <div class="eyebrow">Signal Interpretation</div>
+      <h3 style="font-size: 22px; margin-bottom: 8px;">The composite read. Every second.</h3>
+      <p style="font-size: 15px; color: var(--ash); margin-bottom: 28px;">The oscillator determines the structural setup. TickStrike confirms or contradicts it in real time. The intersection of both defines the signal state.</p>
+      <div class="grid grid-3">
+        <div class="signal-card confirmed">
+          <div class="signal-label"><span class="signal-dot"></span> Confirmed</div>
+          <p style="font-size: 14.5px; color: var(--green);">Oscillator BUY + TickStrike 10-14 in same direction. Both layers agree. Highest-probability entry. This is when Stan enters.</p>
         </div>
-        <div class="state-card">
-          <span class="state-dot amber"></span>
-          <span class="state-label amber">Conflicted</span>
-          <p class="state-desc">Oscillator gives a signal but TickStrike is in the opposite direction. Wait or size down. Real-time flow is fighting the structure.</p>
+        <div class="signal-card conflicted">
+          <div class="signal-label"><span class="signal-dot"></span> Conflicted</div>
+          <p style="font-size: 14.5px; color: var(--amber);">Oscillator gives a signal but TickStrike is pressing the opposite direction. Wait or reduce size. Real-time flow is fighting the structural setup.</p>
         </div>
-        <div class="state-card">
-          <span class="state-dot dim"></span>
-          <span class="state-label dim">Neutral</span>
-          <p class="state-desc">TickStrike below 9. Market is in low-conviction mode. Neither side is pressing hard. Oscillator signals here are unconfirmed.</p>
+        <div class="signal-card neutral">
+          <div class="signal-label"><span class="signal-dot"></span> Neutral</div>
+          <p style="font-size: 14.5px; color: var(--ash);">TickStrike below 9. Low conviction on both sides. No decisive institutional pressure. Signals generated here are unconfirmed — avoid.</p>
         </div>
       </div>
     </div>
-  </section>
-
-  <hr class="divider">
-
-  <!-- THE VISION -->
-  <section id="vision">
-    <div class="section-tag">02 / The Vision</div>
-    <h2 class="section-title">Monitor. Learn. Mimic. Surpass.</h2>
-    <p class="section-sub">Stan trades one hour a day — then burns out. A machine doesn't. The roadmap is to capture his edge, train AI on it, and run it without emotion, fear, or fatigue.</p>
-    <div class="vision-steps" style="grid-template-columns: repeat(5, 1fr);">
-      <div class="vision-step active-step" data-num="PHASE 01">
-        <span class="step-icon">📹</span>
-        <h3>Monitor</h3>
-        <p>Recording Stan's sessions live. Screen-capture every 2 seconds. Every buy/sell decision, oscillator state, and TickStrike reading captured in real time.</p>
-      </div>
-      <div class="vision-step" data-num="PHASE 02">
-        <span class="step-icon">📊</span>
-        <h3>Capture</h3>
-        <p>Building the dataset. Every signal. Every decision. Every entry and exit — timestamped and mapped to oscillator state + TickStrike reading at that exact moment.</p>
-      </div>
-      <div class="vision-step" data-num="PHASE 03">
-        <span class="step-icon">🧠</span>
-        <h3>Train</h3>
-        <p>Teaching the model Stan's logic — not just what he does, but the reasoning behind it. Cloud or local model decision TBD based on data sovereignty needs.</p>
-      </div>
-      <div class="vision-step" data-num="PHASE 04">
-        <span class="step-icon">🤖</span>
-        <h3>Mimic</h3>
-        <p>Automated execution matching Stan's system, running on an automation-compatible platform. Paper trading first. Calibrate. Confirm signal fidelity before real capital.</p>
-      </div>
-      <div class="vision-step" data-num="PHASE 05">
-        <span class="step-icon">🚀</span>
-        <h3>Surpass</h3>
-        <p>Running the full session. No burnout. No emotion. Continuous self-improvement. Stan's edge — amplified by automation, scale, and data-driven refinement.</p>
-      </div>
-    </div>
-
-    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:1rem; font-family:var(--mono); letter-spacing:0.05em;">Phase 1 is in progress. No timelines — we publish progress, not predictions. You're watching it get built.</p>
-
-    <!-- Training question block -->
-    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 2rem; margin-top: 2rem;">
-      <div class="section-tag">Open Questions — Training</div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;">
-        <div>
-          <p style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.4rem;">Data Capture Method</p>
-          <p style="font-size: 0.8rem; color: var(--text-dim);">Screen recording vs 2-second screenshot capture. The right method determines what the AI can learn about Stan's gaze, hesitation, and timing.</p>
-        </div>
-        <div>
-          <p style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.4rem;">Cloud vs Private Model</p>
-          <p style="font-size: 0.8rem; color: var(--text-dim);">ChatGPT/Claude for speed and capability — or a local private model to protect proprietary data. Stan's system is proprietary IP. Data protection is a real concern.</p>
-        </div>
-        <div>
-          <p style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.4rem;">Data Volume Needed</p>
-          <p style="font-size: 0.8rem; color: var(--text-dim);">How many good trading days for a usable behavior model? 3? 5? 10? A month? TBD via structured capture experiment.</p>
-        </div>
-        <div>
-          <p style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.4rem;">Prop Firm Selection</p>
-          <p style="font-size: 0.8rem; color: var(--text-dim);">Automated bot requires an automation-permitted prop firm. Evaluating: Topstep, Apex Trader Funding, Earn2Trade. Stan's current firm (TPT) manual-only.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <!-- TRAINING -->
-  <section id="training">
-    <div class="section-tag">03 / AI Training</div>
-    <h2 class="section-title">We haven't trained the AI yet.<br>Here's why that's the right call.</h2>
-    <p class="section-sub">Before you can teach a machine, you need to understand what it's learning. Phase 1 is capturing exactly how Stan thinks — not just what he does.</p>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5px;">
-      <div class="sys-card">
-        <div class="sys-card-num">OPTION A — PUBLIC / CLOUD</div>
-        <div class="sys-card-title">Cloud Model Training</div>
-        <p class="sys-card-sub">Train using commercial AI (Claude, GPT family). Fastest path to a working model. Broadest capability. Trade-off: training data leaves the local environment — Stan's proprietary edge sent to third-party APIs.</p>
-        <div class="tag-row">
-          <span class="tag tag-green">Fastest iteration</span>
-          <span class="tag tag-green">State-of-the-art models</span>
-          <span class="tag tag-dim">Data sovereignty risk</span>
-        </div>
-      </div>
-      <div class="sys-card">
-        <div class="sys-card-num">OPTION B — PRIVATE / LOCAL</div>
-        <div class="sys-card-title">Local Model Training</div>
-        <p class="sys-card-sub">Train using locally-hosted open models (Llama, Mistral via Ollama). Data never leaves our machines. Complete sovereignty over Stan's methodology. Trade-off: slower iteration, more infrastructure.</p>
-        <div class="tag-row">
-          <span class="tag tag-green">Full data sovereignty</span>
-          <span class="tag tag-green">No API dependency</span>
-          <span class="tag tag-dim">Infrastructure investment</span>
-        </div>
-      </div>
-    </div>
-    <div style="background:var(--bg-card); border:1px solid var(--border); padding:1.2rem 1.5rem; margin-top:1.5px; font-size:0.82rem; color:var(--text-dim);">
-      Both routes remain open. The training data contains Stan's proprietary edge — the data sovereignty decision matters. Evaluation ongoing.
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <!-- FIRMS -->
-  <section id="firms">
-    <div class="section-tag">04 / Execution Platform</div>
-    <h2 class="section-title">Built for automation-compatible execution.</h2>
-    <p class="section-sub">Not all prop trading firms allow algorithmic trading. Tribune Trader was designed from day one for platforms that do. Stan's manual trading operates separately — the automation system runs on a different platform.</p>
-    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5px;">
-      <div class="sys-card">
-        <div class="sys-card-num">UNDER EVALUATION</div>
-        <div class="sys-card-title">Topstep</div>
-        <p class="sys-card-sub">Funded evaluation path for futures traders. NQ contracts available. Automation permitted — verify current terms directly with the firm.</p>
-        <div class="tag-row"><span class="tag tag-green">Automation permitted</span><span class="tag tag-dim">Verify current terms</span></div>
-      </div>
-      <div class="sys-card">
-        <div class="sys-card-num">UNDER EVALUATION</div>
-        <div class="sys-card-title">Apex Trader Funding</div>
-        <p class="sys-card-sub">Multiple account sizes. NQ contracts. Competitive evaluation structure. Automation permitted — verify current terms directly with the firm.</p>
-        <div class="tag-row"><span class="tag tag-green">Automation permitted</span><span class="tag tag-dim">Verify current terms</span></div>
-      </div>
-      <div class="sys-card">
-        <div class="sys-card-num">UNDER EVALUATION</div>
-        <div class="sys-card-title">Earn2Trade</div>
-        <p class="sys-card-sub">$50K/$100K/$150K account tiers. NQ futures. Automation permitted — verify current terms directly with the firm before opening a funded account.</p>
-        <div class="tag-row"><span class="tag tag-green">Automation permitted</span><span class="tag tag-dim">Verify current terms</span></div>
-      </div>
-    </div>
-    <p style="font-size:0.72rem; color:var(--text-muted); font-family:var(--mono); margin-top:1rem; padding:0.8rem 1rem; border:1px solid var(--border); letter-spacing:0.04em;">Prop firm policies on algorithmic trading change. Always verify current terms directly with the firm before opening a funded account for automated trading. The above reflects publicly available information as of 2026-08.</p>
-  </section>
-
-  <hr class="divider">
-
-  <!-- ABOUT -->
-  <section id="about">
-    <div class="section-tag">05 / About</div>
-    <h2 class="section-title">The people building it.</h2>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5px; margin-bottom:2rem;">
-      <div class="sys-card">
-        <div class="sys-card-num">THE SOFTWARE</div>
-        <div class="sys-card-title">Tribune Inc.</div>
-        <p class="sys-card-sub">Designs and builds the Tribune Trader technology — the monitoring systems, AI training pipeline, and automation engine. Jeff Rey and Ryan Poole.</p>
-      </div>
-      <div class="sys-card">
-        <div class="sys-card-num">THE TRADING</div>
-        <div class="sys-card-title">Tribune Trading (entity TBD)</div>
-        <p class="sys-card-sub">Operates the funded accounts and deploys the automation system. Jeff Rey, Ryan Poole, and Stan Smidt. Structure in formation.</p>
-      </div>
-    </div>
-    <p style="font-size:0.8rem; color:var(--text-dim);">This site is for demonstration and internal development purposes. Not financial advice. Not an offer to invest. Past performance is not indicative of future results.</p>
-  </section>
-
-  <hr class="divider">
-
-  <!-- DASHBOARD PREVIEW -->
-  <section>
-    <div class="section-tag">03 / The Dashboard</div>
-    <h2 class="section-title">Live Signal Intelligence.</h2>
-    <p class="section-sub">A Bloomberg-style live dashboard showing the NQ chart, S949 oscillator state, TickStrike order flow, and the composite signal status — updated in real time.</p>
-    <div class="dashboard-preview">
-      <div class="preview-bar">
-        <div class="preview-dots">
-          <div class="preview-dot red"></div>
-          <div class="preview-dot amber"></div>
-          <div class="preview-dot green"></div>
-        </div>
-        <span class="preview-url">tribune-trading.netlify.app/dashboard</span>
-      </div>
-      <div class="preview-content">
-        <div class="preview-panel">
-          <div class="preview-panel-header">NQ SEP26 — 5 MIN CHART (LIVE)</div>
-          <div class="preview-chart-mock">
-            <div class="preview-bar-item" style="height: 45%"></div>
-            <div class="preview-bar-item" style="height: 60%"></div>
-            <div class="preview-bar-item" style="height: 40%"></div>
-            <div class="preview-bar-item" style="height: 75%"></div>
-            <div class="preview-bar-item" style="height: 55%"></div>
-            <div class="preview-bar-item" style="height: 80%"></div>
-            <div class="preview-bar-item" style="height: 65%"></div>
-            <div class="preview-bar-item" style="height: 70%"></div>
-            <div class="preview-bar-item" style="height: 50%"></div>
-            <div class="preview-bar-item" style="height: 85%"></div>
-            <div class="preview-bar-item" style="height: 72%"></div>
-            <div class="preview-bar-item" style="height: 90%"></div>
-          </div>
-        </div>
-        <div class="preview-panel">
-          <div class="preview-panel-header">S949 OSCILLATOR</div>
-          <div class="preview-osc-mock">
-            <div class="preview-osc-line"></div>
-          </div>
-        </div>
-        <div class="preview-panel">
-          <div class="preview-panel-header">ORDER FLOW / TICKSTRIKE</div>
-          <div style="font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); padding-top: 0.3rem;">Level: 12 &nbsp;■■■■■■■■■■■░░<br>GREEN ▲ Sweet Spot</div>
-        </div>
-        <div class="preview-panel">
-          <div class="preview-signal">
-            <span class="preview-signal-text">● CONFIRMED</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <div class="cta-section">
-    <h2>See the System Live</h2>
-    <p>The dashboard is running. NQ futures data, real-time order flow, and the composite signal state — all in one view.</p>
-    <a href="dashboard.html" class="btn-primary">→ Open Live Dashboard</a>
   </div>
+</section>
 
-  <footer>
-    <div class="footer-logo">TRIBUNE TRADER — TRIBUNE INC. © 2026</div>
-    <div class="footer-disclaimer">INTERNAL PREVIEW — NOT FINANCIAL ADVICE — NOT AN OFFER TO INVEST — PAST PERFORMANCE NOT INDICATIVE OF FUTURE RESULTS</div>
-  </footer>
+<hr class="seam">
+
+<!-- DASHBOARD SECTION (DARK) -->
+<section id="dashboard" class="dark-section">
+  <div class="wrap">
+    <div class="eyebrow">02 — The Dashboard</div>
+    <h2>The system, visualized.</h2>
+    <p style="margin-top: 16px; max-width: 56ch;">A Bloomberg-style live dashboard showing the NQ chart, S949 oscillator state, TickStrike order flow, and the composite signal in one terminal view.</p>
+    <div class="btn-row">
+      <a href="dashboard.html" class="btn btn-primary">Open Live Dashboard →</a>
+    </div>
+
+    <!-- Terminal Preview -->
+    <div class="preview-terminal">
+      <div class="preview-terminal-bar">
+        <div class="preview-dot" style="background:#ff5f56"></div>
+        <div class="preview-dot" style="background:#ffbd2e"></div>
+        <div class="preview-dot" style="background:#27c93f"></div>
+        <span style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3);margin-left:8px;letter-spacing:.08em;">TRIBUNE TRADER — LIVE DASHBOARD — PHASE 1</span>
+      </div>
+      <div class="preview-panels">
+        <div class="preview-panel">
+          <div class="preview-panel-label">NQ SEP26 — 5 Min Chart (TradingView Live)</div>
+          <div class="preview-chart">
+            <div class="preview-bar" style="height:45%;background:#ff1744"></div>
+            <div class="preview-bar" style="height:60%;background:#00e676"></div>
+            <div class="preview-bar" style="height:40%;background:#ff1744"></div>
+            <div class="preview-bar" style="height:75%;background:#00e676"></div>
+            <div class="preview-bar" style="height:55%;background:#00e676"></div>
+            <div class="preview-bar" style="height:80%;background:#00e676"></div>
+            <div class="preview-bar" style="height:65%;background:#ff1744"></div>
+            <div class="preview-bar" style="height:72%;background:#00e676"></div>
+            <div class="preview-bar" style="height:85%;background:#00e676"></div>
+            <div class="preview-bar" style="height:78%;background:#00e676"></div>
+            <div class="preview-bar" style="height:90%;background:#00e676"></div>
+          </div>
+        </div>
+        <div class="preview-panel">
+          <div class="preview-panel-label">S949 Oscillator</div>
+          <div class="preview-osc-wave">
+            <svg width="100%" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
+              <line x1="0" y1="30" x2="200" y2="30" stroke="#c41e3a" stroke-width="0.5" stroke-dasharray="3,4" opacity="0.5"/>
+              <polyline points="0,40 20,25 40,38 60,15 80,28 100,10 120,22 140,18 160,30 180,25 200,20" fill="none" stroke="#00e676" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div style="font-family:var(--mono);font-size:11px;color:rgba(0,230,118,.8);margin-top:6px;">+18.4 ↑ BULLISH</div>
+        </div>
+        <div class="preview-panel">
+          <div class="preview-panel-label">TickStrike Order Flow</div>
+          <div style="font-family:var(--mono);font-size:28px;font-weight:600;color:#00e676;line-height:1;">12</div>
+          <div style="font-family:var(--mono);font-size:10px;color:rgba(0,230,118,.6);margin-top:4px;">GREEN ▲ — SWEET SPOT</div>
+          <div class="preview-meter" style="margin-top:10px;">
+            <div class="preview-meter-fill" style="width:70%;background:#00e676;"></div>
+          </div>
+        </div>
+        <div class="preview-panel">
+          <div class="preview-panel-label">Signal Status</div>
+          <div class="preview-signal">
+            <span class="preview-confirmed">● CONFIRMED</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:10px;color:rgba(0,230,118,.5);text-align:center;">Long Setup — Type 2 Div</div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top: 16px; font-family: var(--mono); font-size: 11px; color: rgba(239,235,226,.3); letter-spacing: .06em;">Phase 1: NQ chart live (TradingView). Oscillator + order flow: simulated — live integration Phase 2. Not financial advice.</p>
+  </div>
+</section>
+
+<!-- VISION / ROADMAP -->
+<section id="vision">
+  <div class="wrap">
+    <div class="eyebrow">03 — The Roadmap</div>
+    <h2>Monitor. Capture. Train. Mimic. Surpass.</h2>
+    <p style="margin-top: 16px; max-width: 60ch; color: var(--ash);">Stan trades one hour a day — then burns out. A machine doesn't. The roadmap: capture his edge in full, train AI on it, deploy without emotion or limit.</p>
+
+    <div class="grid grid-5" style="margin-top: 40px;">
+      <div class="step-card active">
+        <div class="step-num">Phase 01</div>
+        <div class="step-name">Monitor</div>
+        <p class="step-desc">Recording Stan's sessions live. Screen-capture every 2 seconds. Every buy/sell, every signal, every oscillator and TickStrike state.</p>
+        <span class="step-status status-active">In Progress</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Phase 02</div>
+        <div class="step-name">Capture</div>
+        <p class="step-desc">Building the dataset. Every decision timestamped and mapped to oscillator state + TickStrike reading at that exact moment.</p>
+        <span class="step-status status-upcoming">Upcoming</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Phase 03</div>
+        <div class="step-name">Train</div>
+        <p class="step-desc">Teaching the model Stan's logic — not just what he does, but the reasoning behind it. Cloud vs local model decision pending.</p>
+        <span class="step-status status-upcoming">Upcoming</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Phase 04</div>
+        <div class="step-name">Mimic</div>
+        <p class="step-desc">Automated execution matching Stan's system, on an automation-compatible funded account. Paper trading first. Real capital after validation.</p>
+        <span class="step-status status-upcoming">Upcoming</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Phase 05</div>
+        <div class="step-name">Surpass</div>
+        <p class="step-desc">Full session. No burnout. No emotion. Continuous self-improvement. Stan's edge — amplified by scale, data, and autonomy.</p>
+        <span class="step-status status-upcoming">Upcoming</span>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: 20px; font-family: var(--mono); font-size: 12px; letter-spacing: .06em;">Phase 1 is in progress. No timelines — we publish progress, not predictions.</p>
+  </div>
+</section>
+
+<hr class="seam">
+
+<!-- AI TRAINING -->
+<section id="training">
+  <div class="wrap">
+    <div class="eyebrow">04 — AI Training</div>
+    <h2>We haven't trained the AI yet.<br>Here's why that's the right call.</h2>
+    <p style="margin-top: 16px; max-width: 62ch; color: var(--ash);">Before you teach a machine, you need to understand what it's learning. Phase 1 is spent capturing exactly how Stan thinks — not just what he does. 10–20 high-quality trading days minimum before training begins.</p>
+
+    <div class="grid grid-2" style="margin-top: 40px;">
+      <div class="compare-card">
+        <span class="compare-label">Option A</span>
+        <h3>Public / Cloud Training</h3>
+        <p style="font-size: 15px; color: var(--ash); margin-top: 10px;">Train using commercial AI models (Claude, GPT family). Fastest path. State-of-the-art capability.</p>
+        <ul class="pro-con-list">
+          <li><span class="pro-icon">✓</span> Fastest path to a working model</li>
+          <li><span class="pro-icon">✓</span> Broadest model capabilities</li>
+          <li><span class="pro-icon">✓</span> No infrastructure to manage</li>
+          <li><span class="con-icon">⚠</span> Training data leaves local environment</li>
+          <li><span class="con-icon">⚠</span> Stan's proprietary edge exposed to third-party APIs</li>
+        </ul>
+        <span class="tag tag-amber" style="margin-top: 16px;">Under evaluation</span>
+      </div>
+      <div class="compare-card">
+        <span class="compare-label">Option B</span>
+        <h3>Private / Local Training</h3>
+        <p style="font-size: 15px; color: var(--ash); margin-top: 10px;">Train using locally-hosted open models (Llama, Mistral via Ollama). Data never leaves our machines.</p>
+        <ul class="pro-con-list">
+          <li><span class="pro-icon">✓</span> Complete data sovereignty</li>
+          <li><span class="pro-icon">✓</span> Stan's methodology stays private</li>
+          <li><span class="pro-icon">✓</span> No API dependency</li>
+          <li><span class="con-icon">⚠</span> Slower iteration cycle</li>
+          <li><span class="con-icon">⚠</span> Infrastructure investment required</li>
+        </ul>
+        <span class="tag tag-amber" style="margin-top: 16px;">Under evaluation</span>
+      </div>
+    </div>
+    <div class="info-box" style="margin-top: 20px;">
+      Both routes remain open. The training data contains Stan's proprietary edge — the data sovereignty decision matters and won't be rushed. We'll evaluate both before committing.
+    </div>
+  </div>
+</section>
+
+<hr class="seam">
+
+<!-- FIRMS -->
+<section id="firms">
+  <div class="wrap">
+    <div class="eyebrow">05 — Execution Platform</div>
+    <h2>Built for automation-compatible execution.</h2>
+    <p style="margin-top: 16px; max-width: 60ch; color: var(--ash);">Not all prop trading firms allow algorithmic trading. Tribune Trader was designed from day one for platforms that do. Stan's manual trading continues separately — the automation system will run on a different platform.</p>
+
+    <div class="grid grid-3" style="margin-top: 40px;">
+      <div class="firm-card">
+        <div class="firm-name">Topstep</div>
+        <div class="firm-status permitted" style="margin-bottom: 14px;">Automation permitted — verify current terms</div>
+        <p style="font-size: 14.5px; color: var(--ash);">Funded evaluation path for futures traders. NQ contracts available. Competitive evaluation structure.</p>
+        <div class="tag-row"><span class="tag tag-green">NQ Futures</span><span class="tag">Funded Eval</span></div>
+      </div>
+      <div class="firm-card">
+        <div class="firm-name">Apex Trader Funding</div>
+        <div class="firm-status permitted" style="margin-bottom: 14px;">Automation permitted — verify current terms</div>
+        <p style="font-size: 14.5px; color: var(--ash);">Multiple account sizes. NQ contracts. Fast evaluation structure with competitive profit split.</p>
+        <div class="tag-row"><span class="tag tag-green">NQ Futures</span><span class="tag">Funded Eval</span></div>
+      </div>
+      <div class="firm-card">
+        <div class="firm-name">Earn2Trade</div>
+        <div class="firm-status permitted" style="margin-bottom: 14px;">Automation permitted — verify current terms</div>
+        <p style="font-size: 14.5px; color: var(--ash);">$50K / $100K / $150K account tiers. NQ futures. Straightforward evaluation and funding path.</p>
+        <div class="tag-row"><span class="tag tag-green">NQ Futures</span><span class="tag">Funded Eval</span></div>
+      </div>
+    </div>
+    <div class="info-box" style="margin-top: 20px;">
+      Prop firm policies on algorithmic trading change. Always verify current terms directly with the firm before opening a funded account for automated trading. Stan's current firm (Take Profit Trader) is an excellent platform for discretionary futures traders — the automation system operates separately.
+    </div>
+  </div>
+</section>
+
+<hr class="seam">
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="wrap">
+    <div class="eyebrow">06 — About</div>
+    <h2>Two entities. One vision.</h2>
+
+    <div class="grid grid-2" style="margin-top: 40px;">
+      <div class="entity-card">
+        <div class="entity-label">The Software</div>
+        <h3 style="margin-bottom: 10px;">Tribune Inc.</h3>
+        <p style="font-size: 15px; color: var(--ash);">Designs and builds the Tribune Trader technology — the monitoring systems, the AI training pipeline, and the automation engine. Jeff Rey and Ryan Poole. The software is jointly owned.</p>
+      </div>
+      <div class="entity-card">
+        <div class="entity-label">The Trading</div>
+        <h3 style="margin-bottom: 10px;">Tribune Trading <span style="color:var(--ash); font-weight:400; font-size:16px;">(entity TBD)</span></h3>
+        <p style="font-size: 15px; color: var(--ash);">Operates the funded accounts and deploys the automation system. Jeff Rey, Ryan Poole, and Stan Smidt. Legal structure in formation. Ownership TBD.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px; text-align: center;">
+      <div class="motto">Vis sine iudicio — Force without judgment</div>
+      <p class="muted" style="margin-top: 20px; max-width: 56ch; margin-left: auto; margin-right: auto;">This site is for demonstration and internal development purposes only. Not financial advice. Not an offer to invest. Past performance is not indicative of future results.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-brand">
+      <svg viewBox="0 0 100 112" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tribune">
+        <rect x="18" y="10" width="64" height="16" rx="2" fill="#8C8896"/>
+        <polygon points="18,33 46,33 46,86 37,86 18,60" fill="#8C8896"/>
+        <polygon points="54,33 82,33 82,60 63,86 54,86" fill="#8C8896"/>
+        <polygon points="40,90 60,90 50,104" fill="#7A1A5C"/>
+      </svg>
+      <span class="footer-wordmark">TRIBUNE TRADER — TRIBUNE INC. © 2026</span>
+    </div>
+    <div class="footer-disclaimer">
+      Internal preview — not for distribution<br>
+      Not financial advice · Not an offer to invest · Past performance not indicative of future results
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>
