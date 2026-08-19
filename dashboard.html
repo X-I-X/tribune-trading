@@ -481,16 +481,16 @@
       <div class="panel-header">
         <div>
           <div class="panel-title" id="chartTitle">NASDAQ-100 FUTURES (NQ) &nbsp;|&nbsp; 5 MIN</div>
-          <div class="chart-subtitle" id="chartSubtitle">E-mini NASDAQ-100 Futures, Sep 2026 -- Stan's primary instrument</div>
+          <div class="chart-subtitle" id="chartSubtitle">NASDAQ-100 via QQQ ETF proxy (live trading uses NQ futures)</div>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <div class="market-btns">
-            <button class="market-btn active" data-market="NQ" onclick="switchMarket('NQ')">NQ</button>
-            <button class="market-btn" data-market="ES" onclick="switchMarket('ES')">ES</button>
-            <button class="market-btn" data-market="MNQ" onclick="switchMarket('MNQ')">MNQ</button>
-            <button class="market-btn" data-market="YM" onclick="switchMarket('YM')">YM</button>
-            <button class="market-btn" data-market="RTY" onclick="switchMarket('RTY')">RTY</button>
-            <button class="market-btn" data-market="GC" onclick="switchMarket('GC')">GC</button>
+            <button class="market-btn active" data-market="NQ" onclick="switchMarket('NQ')" title="NASDAQ-100 via QQQ ETF">NQ</button>
+            <button class="market-btn" data-market="NDX" onclick="switchMarket('NDX')" title="NASDAQ-100 Index (NDX)">NDX</button>
+            <button class="market-btn" data-market="ES" onclick="switchMarket('ES')" title="S&P 500 via SPY ETF">ES</button>
+            <button class="market-btn" data-market="YM" onclick="switchMarket('YM')" title="Dow Jones via DIA ETF">YM</button>
+            <button class="market-btn" data-market="RTY" onclick="switchMarket('RTY')" title="Russell 2000 via IWM ETF">RTY</button>
+            <button class="market-btn" data-market="GC" onclick="switchMarket('GC')" title="Gold via GLD ETF">GC</button>
           </div>
           <span class="panel-badge badge-live">LIVE</span>
         </div>
@@ -502,7 +502,7 @@
           <script type="text/javascript">
           new TradingView.widget({
             "autosize": true,
-            "symbol": "CME_MINI:NQ1!",
+            "symbol": "NASDAQ:QQQ",  // NQ proxy -- CME futures require TradingView Pro
             "interval": "5",
             "timezone": "America/New_York",
             "theme": "dark",
@@ -713,7 +713,7 @@
 
   <!-- STATUS BAR -->
   <div class="status-bar">
-    <div class="status-item"><span class="dot dot-green"></span> NQ Chart: Live (TradingView)</div>
+    <div class="status-item"><span class="dot dot-green"></span> Chart: Live via TradingView (ETF proxies -- CME futures require Pro)</div>
     <div class="status-item"><span class="dot dot-amber"></span> Oscillator: Simulated (S949 proprietary)</div>
     <div class="status-item"><span class="dot dot-amber"></span> Order Flow: Demo mode (TickStrike embed Phase 2)</div>
     <div class="status-item" style="margin-left:auto"><span id="lastUpdate">Last update: --:--:--</span></div>
@@ -1062,13 +1062,14 @@
   // ═══════════════════════════════════════════════════════════════
   // MARKET SWITCHER
   // ═══════════════════════════════════════════════════════════════
+  // CME futures require TradingView Pro on free embeds -- using ETF/index proxies
   const MARKETS = {
-    'NQ':  { symbol: 'CME_MINI:NQ1!',  title: 'NASDAQ-100 FUTURES (NQ)', subtitle: 'E-mini NASDAQ-100 Futures -- Stan\'s primary instrument. 1 point = $20.' },
-    'ES':  { symbol: 'CME_MINI:ES1!',  title: 'S&P 500 FUTURES (ES)',     subtitle: 'E-mini S&P 500 Futures -- most widely traded futures contract. 1 point = $50.' },
-    'MNQ': { symbol: 'CME_MINI:MNQ1!', title: 'MICRO NASDAQ-100 (MNQ)',   subtitle: 'Micro E-mini NASDAQ-100 -- 1/10 the size of NQ. 1 point = $2. Lower capital requirement.' },
-    'YM':  { symbol: 'CBOT_MINI:YM1!', title: 'DOW FUTURES (YM)',          subtitle: 'E-mini Dow Jones Industrial Average. 30 large-cap US companies. 1 point = $5.' },
-    'RTY': { symbol: 'CME_MINI:RTY1!', title: 'RUSSELL 2000 (RTY)',        subtitle: 'E-mini Russell 2000 -- 2,000 small-cap US companies. More volatile. 1 point = $50.' },
-    'GC':  { symbol: 'COMEX:GC1!',     title: 'GOLD FUTURES (GC)',         subtitle: 'Gold Futures on COMEX. 100 troy ounces per contract. Key safe-haven asset.' },
+    'NQ':  { symbol: 'NASDAQ:QQQ',  title: 'NASDAQ-100 (NQ via QQQ)', subtitle: 'QQQ ETF tracks the NASDAQ-100 -- Stan\'s market. Live trading uses NQ futures (CME_MINI:NQ1!). ETF proxy shown here as CME futures require TradingView subscription.' },
+    'NDX': { symbol: 'NASDAQ:NDX',  title: 'NASDAQ-100 INDEX (NDX)',   subtitle: 'The exact NASDAQ-100 index that NQ futures track. Non-tradeable reference index.' },
+    'ES':  { symbol: 'AMEX:SPY',    title: 'S&P 500 (ES via SPY)',     subtitle: 'SPY ETF tracks the S&P 500 -- same as ES futures. Live trading: CME_MINI:ES1!.' },
+    'YM':  { symbol: 'AMEX:DIA',    title: 'DOW JONES (YM via DIA)',   subtitle: 'DIA ETF tracks the Dow Jones Industrial Average -- same as YM futures.' },
+    'RTY': { symbol: 'AMEX:IWM',    title: 'RUSSELL 2000 (RTY via IWM)', subtitle: 'IWM ETF tracks the Russell 2000 -- same as RTY futures. Small-cap, more volatile.' },
+    'GC':  { symbol: 'AMEX:GLD',    title: 'GOLD (GC via GLD)',        subtitle: 'GLD ETF tracks spot gold price. Live trading: COMEX:GC1! futures.' },
   };
   let currentMarket = 'NQ';
   let currentTheme = localStorage.getItem('tt-theme') || 'dark';
