@@ -51,8 +51,8 @@
     }
     .nav-brand {
       font-family: 'Archivo', sans-serif;
-      font-size: 0.7rem; font-weight: 700;
-      letter-spacing: 0.18em; color: var(--aurum);
+      font-size: 0.72rem; font-weight: 800;
+      letter-spacing: 0.2em; color: var(--aurum);
       white-space: nowrap;
     }
     .nav-brand span { color: #7A1A5C; }
@@ -433,7 +433,7 @@
         <polygon points="54,33 82,33 82,60 63,86 54,86" fill="#f5a623"/>
         <polygon points="40,90 60,90 50,104" fill="#7A1A5C"/>
       </svg>
-      <div class="nav-brand">TRIBUNE <span>TRADER</span></div>
+      <div class="nav-brand"><strong style="font-weight:800;letter-spacing:.2em;">TRIBUNE</strong> <span>TRADER</span></div>
     </a>
     <div class="nav-sep"></div>
     <div class="nav-links">
@@ -495,7 +495,7 @@
         <div style="display:flex; align-items:center; gap:8px;">
           <div class="market-btns">
             <button class="market-btn active" data-market="NQ" onclick="switchMarket('NQ')" title="NASDAQ-100 via QQQ ETF">NQ</button>
-            <button class="market-btn" data-market="NDX" onclick="switchMarket('NDX')" title="NASDAQ-100 Index (NDX)">NDX</button>
+            <button class="market-btn" data-market="NDX" onclick="switchMarket('NDX')" title="NASDAQ-100 Index (TVC:NDX - free)">NDX</button>
             <button class="market-btn" data-market="ES" onclick="switchMarket('ES')" title="S&P 500 via SPY ETF">ES</button>
             <button class="market-btn" data-market="YM" onclick="switchMarket('YM')" title="Dow Jones via DIA ETF">YM</button>
             <button class="market-btn" data-market="RTY" onclick="switchMarket('RTY')" title="Russell 2000 via IWM ETF">RTY</button>
@@ -508,43 +508,6 @@
         <div class="tradingview-widget-container" style="height:100%;width:100%">
           <div id="tradingview_nq_chart" style="height:100%;width:100%"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-          <script type="text/javascript">
-          new TradingView.widget({
-            "autosize": true,
-            "symbol": "NASDAQ:QQQ",  // NQ proxy -- CME futures require TradingView Pro
-            "interval": "5",
-            "timezone": "America/New_York",
-            "theme": "dark",
-            "style": "1",
-            "locale": "en",
-            "toolbar_bg": "#0c0c12",
-            "enable_publishing": false,
-            "allow_symbol_change": false,
-            "hide_side_toolbar": true,
-            "hide_top_toolbar": false,
-            "withdateranges": false,
-            "save_image": false,
-            "details": false,
-            "hotlist": false,
-            "calendar": false,
-            "studies": [],
-            "container_id": "tradingview_nq_chart",
-            "overrides": {
-              "paneProperties.background": "#0a0a10",
-              "paneProperties.backgroundType": "solid",
-              "paneProperties.vertGridProperties.color": "#151520",
-              "paneProperties.horzGridProperties.color": "#151520",
-              "symbolWatermarkProperties.transparency": 90,
-              "scalesProperties.textColor": "#5c6370",
-              "mainSeriesProperties.candleStyle.upColor": "#00e676",
-              "mainSeriesProperties.candleStyle.downColor": "#ff1744",
-              "mainSeriesProperties.candleStyle.borderUpColor": "#00e676",
-              "mainSeriesProperties.candleStyle.borderDownColor": "#ff1744",
-              "mainSeriesProperties.candleStyle.wickUpColor": "#00e676",
-              "mainSeriesProperties.candleStyle.wickDownColor": "#ff1744"
-            }
-          });
-          </script>
         </div>
       </div>
     </div>
@@ -1074,7 +1037,7 @@
   // CME futures require TradingView Pro on free embeds -- using ETF/index proxies
   const MARKETS = {
     'NQ':  { symbol: 'NASDAQ:QQQ',  title: 'NASDAQ-100 (NQ via QQQ)', subtitle: 'QQQ ETF tracks the NASDAQ-100 -- Stan\'s market. Live trading uses NQ futures (CME_MINI:NQ1!). ETF proxy shown here as CME futures require TradingView subscription.' },
-    'NDX': { symbol: 'NASDAQ:NDX',  title: 'NASDAQ-100 INDEX (NDX)',   subtitle: 'The exact NASDAQ-100 index that NQ futures track. Non-tradeable reference index.' },
+    'NDX': { symbol: 'TVC:NDX',     title: 'NASDAQ-100 INDEX (NDX)',   subtitle: 'NASDAQ-100 index via TradingView data. Same index NQ futures track. Non-tradeable reference.' },
     'ES':  { symbol: 'AMEX:SPY',    title: 'S&P 500 (ES via SPY)',     subtitle: 'SPY ETF tracks the S&P 500 -- same as ES futures. Live trading: CME_MINI:ES1!.' },
     'YM':  { symbol: 'AMEX:DIA',    title: 'DOW JONES (YM via DIA)',   subtitle: 'DIA ETF tracks the Dow Jones Industrial Average -- same as YM futures.' },
     'RTY': { symbol: 'AMEX:IWM',    title: 'RUSSELL 2000 (RTY via IWM)', subtitle: 'IWM ETF tracks the Russell 2000 -- same as RTY futures. Small-cap, more volatile.' },
@@ -1151,6 +1114,13 @@
   function closeGuide() { document.getElementById('guideModal').classList.remove('open'); }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
   document.getElementById('guideModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeGuide(); });
+
+  // Init chart on load (tv.js loaded synchronously above)
+  if (typeof TradingView !== 'undefined') {
+    buildTVWidget(currentMarket);
+  } else {
+    document.querySelector('script[src*="tv.js"]').addEventListener('load', () => buildTVWidget(currentMarket));
+  }
   </script>
 
 <script src="/glossary.js" defer></script>
