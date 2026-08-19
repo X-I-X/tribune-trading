@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Tribune Trader  -  Live Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #050507;
@@ -14,8 +14,10 @@
       --bg-card: #0f0f16;
       --border: #181825;
       --border-bright: #252535;
-      --accent: #c41e3a;
-      --gold: #f5a623;
+      --accent: #7A1A5C;
+      --tyrian: #7A1A5C;
+      --aurum: #C6A35A;
+      --gold: #C6A35A;
       --green: #00e676;
       --green-dim: rgba(0,230,118,0.08);
       --red: #ff1744;
@@ -24,8 +26,8 @@
       --text: #d8dae0;
       --text-dim: #5c6370;
       --text-muted: #2a2d35;
-      --mono: 'IBM Plex Mono', 'Courier New', monospace;
-      --sans: 'IBM Plex Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', 'Courier New', monospace;
+      --sans: 'Inter', system-ui, sans-serif;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; overflow: hidden; }
@@ -48,11 +50,12 @@
       flex-shrink: 0;
     }
     .nav-brand {
-      font-size: 0.7rem; font-weight: 600;
-      letter-spacing: 0.18em; color: var(--gold);
+      font-family: 'Archivo', sans-serif;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.18em; color: var(--aurum);
       white-space: nowrap;
     }
-    .nav-brand span { color: var(--accent); }
+    .nav-brand span { color: #7A1A5C; }
     .nav-sep { width: 1px; height: 18px; background: var(--border-bright); }
     .nav-links { display: flex; gap: 1.5rem; flex: 1; }
     .nav-links a {
@@ -120,6 +123,7 @@
       flex-shrink: 0;
     }
     .panel-title {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 0.58rem; letter-spacing: 0.14em;
       color: var(--text-dim); text-transform: uppercase;
       font-weight: 500;
@@ -339,6 +343,11 @@
       --text-muted: #9ca3af;
     }
     :root[data-theme="light"] .top-nav { background: #fff; border-bottom-color: #dde1e8; }
+    :root[data-theme="light"] .nav-brand { color: #0A0B12; }
+    :root[data-theme="light"] .nav-brand span { color: #7A1A5C; }
+    :root[data-theme="light"] .nav-links a { color: #0A0B12; }
+    :root[data-theme="light"] .nav-status { color: #1A7A3C; }
+    :root[data-theme="light"] .nav-time { color: #6b7280; }
     :root[data-theme="light"] .panel { background: #fff; }
     :root[data-theme="light"] .panel-header { background: #f8f9fb; }
     :root[data-theme="light"] .osc-reading { background: #f8f9fb; }
@@ -365,7 +374,7 @@
       border-radius: 2px; cursor: pointer; font-family: var(--mono);
       letter-spacing: 0.05em; transition: color 0.15s, border-color 0.15s;
     }
-    .icon-btn:hover { color: var(--text); border-color: var(--border-bright); }
+    .icon-btn:hover { color: #C6A35A; border-color: #7A1A5C; }
 
     /* GUIDE MODAL */
     .guide-overlay {
