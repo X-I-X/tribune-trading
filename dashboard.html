@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Tribune Trader — Live Dashboard</title>
+  <title>Tribune Trader  -  Live Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -327,7 +327,78 @@
     .dot-amber { background: var(--amber); }
     .dot-dim { background: var(--border-bright); }
 
+    /* LIGHT THEME */
+    :root[data-theme="light"] {
+      --bg: #f0f2f5;
+      --bg-panel: #ffffff;
+      --bg-card: #f8f9fb;
+      --border: #dde1e8;
+      --border-bright: #c5cad4;
+      --text: #1a1d24;
+      --text-dim: #6b7280;
+      --text-muted: #9ca3af;
+    }
+    :root[data-theme="light"] .top-nav { background: #fff; border-bottom-color: #dde1e8; }
+    :root[data-theme="light"] .panel { background: #fff; }
+    :root[data-theme="light"] .panel-header { background: #f8f9fb; }
+    :root[data-theme="light"] .osc-reading { background: #f8f9fb; }
+    :root[data-theme="light"] .status-bar { background: #f8f9fb; border-top-color: #dde1e8; }
+    :root[data-theme="light"] #oscillatorCanvas { background: #fff !important; }
+
+    /* MARKET SELECTOR */
+    .market-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+    .market-btn {
+      font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em;
+      padding: 3px 8px; border-radius: 2px; cursor: pointer;
+      background: transparent; color: var(--text-dim);
+      border: 1px solid var(--border); transition: all 0.15s;
+      text-transform: uppercase;
+    }
+    .market-btn:hover { color: var(--text); border-color: var(--border-bright); }
+    .market-btn.active { background: #7A1A5C; color: #fff; border-color: #7A1A5C; }
+    .chart-subtitle { font-size: 0.5rem; color: var(--text-muted); letter-spacing: 0.08em; margin-top: 2px; }
+
+    /* THEME + GUIDE BUTTONS */
+    .icon-btn {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-dim); font-size: 0.7rem; padding: 3px 8px;
+      border-radius: 2px; cursor: pointer; font-family: var(--mono);
+      letter-spacing: 0.05em; transition: color 0.15s, border-color 0.15s;
+    }
+    .icon-btn:hover { color: var(--text); border-color: var(--border-bright); }
+
+    /* GUIDE MODAL */
+    .guide-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      z-index: 200; display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .guide-overlay.open { display: flex; }
+    .guide-modal {
+      background: var(--bg-panel); border: 1px solid var(--border-bright);
+      border-radius: 6px; max-width: 680px; width: 100%;
+      max-height: 80vh; overflow-y: auto; padding: 0;
+    }
+    .guide-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .guide-title { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.15em; color: var(--text); font-weight: 600; text-transform: uppercase; }
+    .guide-close { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.2rem; padding: 0 4px; }
+    .guide-body { padding: 20px; }
+    .guide-section { margin-bottom: 24px; }
+    .guide-section:last-child { margin-bottom: 0; }
+    .guide-section-title { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: #7A1A5C; margin-bottom: 10px; font-weight: 600; }
+    .guide-section p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 8px; }
+    .guide-section p:last-child { margin-bottom: 0; }
+    .guide-step { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+    .guide-step:last-child { border-bottom: none; }
+    .guide-step-num { font-family: var(--mono); font-size: 0.6rem; color: #7A1A5C; font-weight: 600; letter-spacing: 0.1em; flex-shrink: 0; padding-top: 2px; }
+    .guide-step-text { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+    .guide-step-text strong { color: var(--text); }
+
     /* RESPONSIVE */
+
     @media (max-width: 900px) {
       .dashboard-grid {
         grid-template-columns: 1fr;
@@ -366,13 +437,15 @@
         <div class="status-dot"></div>
         <span id="marketStatus">LIVE</span>
       </div>
+      <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle light/dark mode">&#9788; LIGHT</button>
+      <button class="icon-btn" onclick="openGuide()" title="How to use this dashboard">? GUIDE</button>
       <div class="nav-time" id="clock">--:--:-- ET</div>
     </div>
   </nav>
 
   <!-- PHASE 1 DISCLOSURE BAR -->
   <div style="background:#1a0a00; border-bottom:1px solid #3a2000; padding:0 1rem; height:24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
-    <span style="font-family:var(--mono); font-size:0.55rem; color:#f5a623; letter-spacing:0.1em;">⚠ PHASE 1 — DEMO MODE &nbsp;|&nbsp; NQ Chart: Live (TradingView) &nbsp;|&nbsp; Oscillator + Order Flow: Simulated data — S949 is proprietary, TickStrike live integration: Phase 2</span>
+    <span style="font-family:var(--mono); font-size:0.55rem; color:#f5a623; letter-spacing:0.1em;">⚠ PHASE 1  -  DEMO MODE &nbsp;|&nbsp; NQ Chart: Live (TradingView) &nbsp;|&nbsp; Oscillator + Order Flow: Simulated data  -  S949 is proprietary, TickStrike live integration: Phase 2</span>
     <span style="font-family:var(--mono); font-size:0.5rem; color:#5c4010; letter-spacing:0.08em;">NOT FINANCIAL ADVICE &nbsp;|&nbsp; TRIBUNE INC. INTERNAL</span>
   </div>
 
@@ -406,8 +479,21 @@
     <!-- PANEL: NQ LIVE CHART -->
     <div class="panel panel-chart">
       <div class="panel-header">
-        <span class="panel-title">NASDAQ-100 FUTURES — NQ SEP26 &nbsp;|&nbsp; 5 MIN</span>
-        <span class="panel-badge badge-live">LIVE</span>
+        <div>
+          <div class="panel-title" id="chartTitle">NASDAQ-100 FUTURES (NQ) &nbsp;|&nbsp; 5 MIN</div>
+          <div class="chart-subtitle" id="chartSubtitle">E-mini NASDAQ-100 Futures, Sep 2026 -- Stan's primary instrument</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="market-btns">
+            <button class="market-btn active" data-market="NQ" onclick="switchMarket('NQ')">NQ</button>
+            <button class="market-btn" data-market="ES" onclick="switchMarket('ES')">ES</button>
+            <button class="market-btn" data-market="MNQ" onclick="switchMarket('MNQ')">MNQ</button>
+            <button class="market-btn" data-market="YM" onclick="switchMarket('YM')">YM</button>
+            <button class="market-btn" data-market="RTY" onclick="switchMarket('RTY')">RTY</button>
+            <button class="market-btn" data-market="GC" onclick="switchMarket('GC')">GC</button>
+          </div>
+          <span class="panel-badge badge-live">LIVE</span>
+        </div>
       </div>
       <div class="chart-container">
         <div class="tradingview-widget-container" style="height:100%;width:100%">
@@ -484,7 +570,7 @@
     <!-- PANEL: ORDER FLOW / TICKSTRIKE -->
     <div class="panel panel-orderflow">
       <div class="panel-header">
-        <span class="panel-title">ORDER FLOW — TICKSTRIKE METER &nbsp;|&nbsp; NQ</span>
+        <span class="panel-title">ORDER FLOW  -  TICKSTRIKE METER &nbsp;|&nbsp; NQ</span>
         <span class="panel-badge badge-demo">DEMO</span>
       </div>
       <div class="of-body">
@@ -512,7 +598,7 @@
               <div class="audio-bar" style="height:10px"></div>
               <div class="audio-bar" style="height:5px"></div>
             </div>
-            <span id="audioLabel">Buying ticks — steady</span>
+            <span id="audioLabel">Buying ticks  -  steady</span>
           </div>
           <div class="ts-source">SOURCE: FinancialJuice TickStrike™ [DEMO SIMULATION]</div>
         </div>
@@ -529,7 +615,7 @@
         <div class="signal-badge" id="signalBadge">
           <div class="signal-glow" id="signalGlow"></div>
           <div class="signal-text-main green" id="signalText">CONFIRMED</div>
-          <div class="signal-sub" id="signalSub">Long Setup — Type 2 Divergence</div>
+          <div class="signal-sub" id="signalSub">Long Setup  -  Type 2 Divergence</div>
         </div>
         <div class="signal-detail">
           <div class="detail-row">
@@ -542,7 +628,7 @@
           </div>
           <div class="detail-row">
             <span class="detail-key">Divergence</span>
-            <span class="detail-val" id="detDiv">Type 2 — with trend</span>
+            <span class="detail-val" id="detDiv">Type 2  -  with trend</span>
           </div>
           <div class="detail-row">
             <span class="detail-key">Stan's Rule</span>
@@ -554,9 +640,75 @@
 
   </div>
 
+  <!-- GUIDE MODAL -->
+  <div class="guide-overlay" id="guideModal">
+    <div class="guide-modal">
+      <div class="guide-header">
+        <span class="guide-title">How to Use This Dashboard</span>
+        <button class="guide-close" onclick="closeGuide()">&#x2715;</button>
+      </div>
+      <div class="guide-body">
+
+        <div class="guide-section">
+          <div class="guide-section-title">Market Selector</div>
+          <p>Use the buttons in the top-left of the chart panel to switch between futures contracts. NQ is Stan's primary instrument. MNQ is the micro version (1/10 the size, ideal for testing). All charts are live via TradingView.</p>
+          <div class="guide-step"><span class="guide-step-num">NQ</span><span class="guide-step-text"><strong>E-mini NASDAQ-100.</strong> Stan's market. 1 point = $20. High-tech exposure. Primary trading instrument for Tribune Trader.</span></div>
+          <div class="guide-step"><span class="guide-step-num">ES</span><span class="guide-step-text"><strong>E-mini S&P 500.</strong> Broader market exposure. 1 point = $50. Most liquid futures contract globally.</span></div>
+          <div class="guide-step"><span class="guide-step-num">MNQ</span><span class="guide-step-text"><strong>Micro NASDAQ-100.</strong> 1/10 of NQ. 1 point = $2. Same signals, lower capital risk. Good for testing strategies.</span></div>
+          <div class="guide-step"><span class="guide-step-num">YM</span><span class="guide-step-text"><strong>E-mini Dow.</strong> 30 large-cap US companies. 1 point = $5.</span></div>
+          <div class="guide-step"><span class="guide-step-num">RTY</span><span class="guide-step-text"><strong>Russell 2000.</strong> Small-cap index. More volatile. 1 point = $50.</span></div>
+          <div class="guide-step"><span class="guide-step-num">GC</span><span class="guide-step-text"><strong>Gold Futures.</strong> Safe-haven asset. 100 troy ounces per contract.</span></div>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">Panel 1: NQ Live Chart</div>
+          <p>A real-time 5-minute candlestick chart of the selected futures contract, powered by TradingView. Each candle represents 5 minutes of price action. Green candles = price closed higher than it opened. Red candles = closed lower. Use the chart to identify swing highs and swing lows -- the structural pivots where Stan looks for divergence signals.</p>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">Panel 2: S949 Oscillator</div>
+          <p>Stan's primary decision instrument. The oscillator runs on a ±40 scale. The dashed red line at 0 is the zero line -- the neutral midpoint between bullish and bearish momentum. Green segments indicate rising momentum; red indicates falling.</p>
+          <p><strong>What to look for:</strong> Divergence between the oscillator and price. In an uptrend, look for price making a higher low while the oscillator makes a lower low -- that disagreement is the Type 2 buy signal. BUY arrows mark confirmed bullish divergence. SELL arrows mark bearish divergence.</p>
+          <p style="font-size:0.75rem; color:var(--text-muted);">Note: Phase 1 oscillator is a realistic simulation. Stan's actual S949 is a proprietary NinjaTrader indicator. Live integration planned for Phase 2.</p>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">Panel 3: TickStrike Order Flow</div>
+          <p>Real-time order flow pressure meter by FinancialJuice. Green = buying pressure. Red = selling pressure. The number shows intensity.</p>
+          <div class="guide-step"><span class="guide-step-num">&#60;8</span><span class="guide-step-text">Low activity. Algos not engaged. No clear direction.</span></div>
+          <div class="guide-step"><span class="guide-step-num">8</span><span class="guide-step-text"><strong>Probing.</strong> Stan's warning level. Market is testing but not committed.</span></div>
+          <div class="guide-step"><span class="guide-step-num">9-10</span><span class="guide-step-text">Active. Watchable. Sometimes actionable with oscillator confirmation.</span></div>
+          <div class="guide-step"><span class="guide-step-num">11-14</span><span class="guide-step-text"><strong>Sweet Spot.</strong> Decisive institutional aggression. This is what Stan waits for.</span></div>
+          <div class="guide-step"><span class="guide-step-num">14+</span><span class="guide-step-text">Extreme. Strong but may signal exhaustion. Caution on new entries.</span></div>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">Phase 1: simulated demo. Live FinancialJuice widget planned for Phase 2 (NQ coverage in free widget unconfirmed -- must verify at financialjuice.com).</p>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">Panel 4: Signal Status</div>
+          <p>The composite read. Computed from oscillator trend direction and TickStrike level every 2 seconds.</p>
+          <div class="guide-step"><span class="guide-step-num" style="color:#00e676;">CONFIRMED</span><span class="guide-step-text">Oscillator and TickStrike agree on direction. TickStrike at 10+. Highest-confidence setup. Stan enters here.</span></div>
+          <div class="guide-step"><span class="guide-step-num" style="color:#ffab00;">CONFLICTED</span><span class="guide-step-text">Oscillator gives a signal but TickStrike is pressing the opposite direction. Wait or reduce size.</span></div>
+          <div class="guide-step"><span class="guide-step-num" style="color:#5c6370;">NEUTRAL</span><span class="guide-step-text">TickStrike below 9. Neither side pressing hard. Avoid new positions.</span></div>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">Light / Dark Mode</div>
+          <p>Use the LIGHT / DARK button in the top navigation to toggle between themes. Your preference is saved locally. The TradingView chart switches theme automatically.</p>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">Phase 1 Disclaimer</div>
+          <p>The NQ chart is live real-time data via TradingView. The oscillator and order flow panels are simulated -- the S949 is Stan's proprietary NinjaScript indicator and is not accessible externally. TickStrike is a FinancialJuice product and requires a subscription for live use. This dashboard demonstrates the intended system layout for Phase 1 internal review.</p>
+          <p>Not financial advice. Past performance is not indicative of future results.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- FINANCIAL DISCLAIMER -->
   <div style="background:#050507; border-top:1px solid #181825; padding:0 1rem; height:18px; display:flex; align-items:center; flex-shrink:0;">
-    <span style="font-family:var(--mono); font-size:0.48rem; color:#2a2d35; letter-spacing:0.06em;">TRIBUNE TRADER — FOR DEMONSTRATION AND INTERNAL DEVELOPMENT ONLY. NOT FINANCIAL ADVICE. NOT AN OFFER TO INVEST. PAST PERFORMANCE NOT INDICATIVE OF FUTURE RESULTS. SIMULATED DATA DOES NOT REPRESENT LIVE TRADING CAPABILITY.</span>
+    <span style="font-family:var(--mono); font-size:0.48rem; color:#2a2d35; letter-spacing:0.06em;">TRIBUNE TRADER  -  FOR DEMONSTRATION AND INTERNAL DEVELOPMENT ONLY. NOT FINANCIAL ADVICE. NOT AN OFFER TO INVEST. PAST PERFORMANCE NOT INDICATIVE OF FUTURE RESULTS. SIMULATED DATA DOES NOT REPRESENT LIVE TRADING CAPABILITY.</span>
   </div>
 
   <!-- STATUS BAR -->
@@ -565,7 +717,7 @@
     <div class="status-item"><span class="dot dot-amber"></span> Oscillator: Simulated (S949 proprietary)</div>
     <div class="status-item"><span class="dot dot-amber"></span> Order Flow: Demo mode (TickStrike embed Phase 2)</div>
     <div class="status-item" style="margin-left:auto"><span id="lastUpdate">Last update: --:--:--</span></div>
-    <div class="status-item">TRIBUNE TRADER — INTERNAL DEMO</div>
+    <div class="status-item">TRIBUNE TRADER  -  INTERNAL DEMO</div>
   </div>
 
   <script>
@@ -596,7 +748,7 @@
   updateClock();
 
   // ═══════════════════════════════════════════════════════════════
-  // S949 OSCILLATOR — CANVAS ANIMATION
+  // S949 OSCILLATOR  -  CANVAS ANIMATION
   // ═══════════════════════════════════════════════════════════════
   const canvas = document.getElementById('oscillatorCanvas');
   const ctx = canvas.getContext('2d');
@@ -822,19 +974,19 @@
     let stateText, audioLabel;
     if (tsCurrentLevel < 8) {
       stateText = 'LOW ACTIVITY (< 8)';
-      audioLabel = 'Quiet — minimal order flow';
+      audioLabel = 'Quiet  -  minimal order flow';
     } else if (tsCurrentLevel < 9) {
-      stateText = 'PROBING (8) — warning';
-      audioLabel = 'Sparse ticks — testing';
+      stateText = 'PROBING (8)  -  warning';
+      audioLabel = 'Sparse ticks  -  testing';
     } else if (tsCurrentLevel < 11) {
       stateText = 'ACTIVE (9-10)';
       audioLabel = tsIsBuying ? 'Steady buying ticks' : 'Steady selling ticks';
     } else if (tsCurrentLevel <= 14) {
       stateText = 'SWEET SPOT (11-14) ✓';
-      audioLabel = tsIsBuying ? 'Strong buying — algo activity' : 'Machine gun — heavy selling';
+      audioLabel = tsIsBuying ? 'Strong buying  -  algo activity' : 'Machine gun  -  heavy selling';
     } else {
       stateText = 'EXTREME (14+)';
-      audioLabel = tsIsBuying ? 'Very strong buying — may exhaust' : 'Capitulation selling';
+      audioLabel = tsIsBuying ? 'Very strong buying  -  may exhaust' : 'Capitulation selling';
     }
 
     document.getElementById('tsStateText').textContent = stateText;
@@ -865,18 +1017,18 @@
       if ((oscBull && tsGreen) || (!oscBull && !tsGreen)) {
         state = 'CONFIRMED';
         stateClass = 'green';
-        sub = (oscBull ? 'Long' : 'Short') + ' Setup — Type 2 Divergence';
+        sub = (oscBull ? 'Long' : 'Short') + ' Setup  -  Type 2 Divergence';
         setupBg = 'rgba(0,230,118,0.1)'; setupColor = 'var(--green)';
       } else {
         state = 'CONFLICTED';
         stateClass = 'amber';
-        sub = 'Oscillator vs Order Flow disagree — wait';
+        sub = 'Oscillator vs Order Flow disagree  -  wait';
         setupBg = 'rgba(255,171,0,0.1)'; setupColor = 'var(--amber)';
       }
     } else {
       state = 'NEUTRAL';
       stateClass = 'dim';
-      sub = 'Low conviction — TickStrike < 9';
+      sub = 'Low conviction  -  TickStrike < 9';
       setupBg = 'rgba(50,50,60,0.3)'; setupColor = 'var(--text-dim)';
     }
 
@@ -896,7 +1048,7 @@
     document.getElementById('detOsc').className = 'detail-val ' + (oscBull ? 'green' : 'red');
     document.getElementById('detFlow').textContent = tsStr;
     document.getElementById('detFlow').className = 'detail-val ' + (tsGreen ? 'green' : 'red');
-    document.getElementById('detDiv').textContent = state === 'CONFIRMED' ? 'Type 2 — with trend' : state === 'CONFLICTED' ? 'Waiting for confirmation' : 'N/A — flow < threshold';
+    document.getElementById('detDiv').textContent = state === 'CONFIRMED' ? 'Type 2  -  with trend' : state === 'CONFLICTED' ? 'Waiting for confirmation' : 'N/A  -  flow < threshold';
     document.getElementById('detRule').textContent = oscBull ? 'Compare lows in uptrend' : 'Compare highs in downtrend';
   }
 
@@ -906,7 +1058,91 @@
 
   // Window resize: redraw canvas
   window.addEventListener('resize', drawOscillator);
+
+  // ═══════════════════════════════════════════════════════════════
+  // MARKET SWITCHER
+  // ═══════════════════════════════════════════════════════════════
+  const MARKETS = {
+    'NQ':  { symbol: 'CME_MINI:NQ1!',  title: 'NASDAQ-100 FUTURES (NQ)', subtitle: 'E-mini NASDAQ-100 Futures -- Stan\'s primary instrument. 1 point = $20.' },
+    'ES':  { symbol: 'CME_MINI:ES1!',  title: 'S&P 500 FUTURES (ES)',     subtitle: 'E-mini S&P 500 Futures -- most widely traded futures contract. 1 point = $50.' },
+    'MNQ': { symbol: 'CME_MINI:MNQ1!', title: 'MICRO NASDAQ-100 (MNQ)',   subtitle: 'Micro E-mini NASDAQ-100 -- 1/10 the size of NQ. 1 point = $2. Lower capital requirement.' },
+    'YM':  { symbol: 'CBOT_MINI:YM1!', title: 'DOW FUTURES (YM)',          subtitle: 'E-mini Dow Jones Industrial Average. 30 large-cap US companies. 1 point = $5.' },
+    'RTY': { symbol: 'CME_MINI:RTY1!', title: 'RUSSELL 2000 (RTY)',        subtitle: 'E-mini Russell 2000 -- 2,000 small-cap US companies. More volatile. 1 point = $50.' },
+    'GC':  { symbol: 'COMEX:GC1!',     title: 'GOLD FUTURES (GC)',         subtitle: 'Gold Futures on COMEX. 100 troy ounces per contract. Key safe-haven asset.' },
+  };
+  let currentMarket = 'NQ';
+  let currentTheme = localStorage.getItem('tt-theme') || 'dark';
+
+  // Apply saved theme
+  if (currentTheme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.getElementById('themeBtn').textContent = '◑ DARK';
+  }
+
+  function buildTVWidget(market) {
+    const el = document.getElementById('tradingview_nq_chart');
+    el.innerHTML = '';
+    new TradingView.widget({
+      autosize: true,
+      symbol: MARKETS[market].symbol,
+      interval: '5',
+      timezone: 'America/New_York',
+      theme: currentTheme === 'dark' ? 'dark' : 'light',
+      style: '1',
+      locale: 'en',
+      toolbar_bg: currentTheme === 'dark' ? '#0c0c12' : '#f8f9fb',
+      enable_publishing: false,
+      allow_symbol_change: false,
+      hide_side_toolbar: true,
+      save_image: false,
+      details: false,
+      container_id: 'tradingview_nq_chart',
+      overrides: currentTheme === 'dark' ? {
+        'paneProperties.background': '#0a0a10',
+        'paneProperties.backgroundType': 'solid',
+        'paneProperties.vertGridProperties.color': '#151520',
+        'paneProperties.horzGridProperties.color': '#151520',
+        'scalesProperties.textColor': '#5c6370',
+        'mainSeriesProperties.candleStyle.upColor': '#00e676',
+        'mainSeriesProperties.candleStyle.downColor': '#ff1744',
+        'mainSeriesProperties.candleStyle.borderUpColor': '#00e676',
+        'mainSeriesProperties.candleStyle.borderDownColor': '#ff1744',
+        'mainSeriesProperties.candleStyle.wickUpColor': '#00e676',
+        'mainSeriesProperties.candleStyle.wickDownColor': '#ff1744',
+      } : {}
+    });
+  }
+
+  function switchMarket(key) {
+    currentMarket = key;
+    document.querySelectorAll('.market-btn').forEach(b => b.classList.toggle('active', b.dataset.market === key));
+    document.getElementById('chartTitle').textContent = MARKETS[key].title + ' \u00a0|\u00a0 5 MIN';
+    document.getElementById('chartSubtitle').textContent = MARKETS[key].subtitle;
+    buildTVWidget(key);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // THEME TOGGLE
+  // ═══════════════════════════════════════════════════════════════
+  function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('tt-theme', currentTheme);
+    document.documentElement.setAttribute('data-theme', currentTheme === 'dark' ? '' : 'light');
+    document.getElementById('themeBtn').textContent = currentTheme === 'dark' ? '\u2600 LIGHT' : '\u25d1 DARK';
+    buildTVWidget(currentMarket);
+    // Redraw oscillator with new background
+    drawOscillator();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // GUIDE MODAL
+  // ═══════════════════════════════════════════════════════════════
+  function openGuide() { document.getElementById('guideModal').classList.add('open'); }
+  function closeGuide() { document.getElementById('guideModal').classList.remove('open'); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
+  document.getElementById('guideModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeGuide(); });
   </script>
 
+<script src="/glossary.js" defer></script>
 </body>
 </html>
