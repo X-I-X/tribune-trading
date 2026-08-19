@@ -378,8 +378,8 @@
   <!-- HERO -->
   <div class="hero">
     <div class="hero-tag">Tribune Inc. — Internal Preview</div>
-    <h1>30 Years of Edge.<br><span>Now Without Limits.</span></h1>
-    <p class="hero-sub">Stan's battle-tested NASDAQ futures system, captured, codified, and built for the age of autonomous trading.</p>
+    <h1>30 years of edge.<br><span>Now we teach a machine.</span></h1>
+    <p class="hero-sub">Stan Smidt traded NASDAQ futures for 30 years. Tribune Trader is building the system to capture, codify, and ultimately surpass what he knows.</p>
     <div class="hero-stats">
       <div class="stat">
         <span class="stat-value">30+</span>
@@ -468,28 +468,35 @@
     <div class="section-tag">02 / The Vision</div>
     <h2 class="section-title">Monitor. Learn. Mimic. Surpass.</h2>
     <p class="section-sub">Stan trades one hour a day — then burns out. A machine doesn't. The roadmap is to capture his edge, train AI on it, and run it without emotion, fear, or fatigue.</p>
-    <div class="vision-steps">
+    <div class="vision-steps" style="grid-template-columns: repeat(5, 1fr);">
       <div class="vision-step active-step" data-num="PHASE 01">
         <span class="step-icon">📹</span>
         <h3>Monitor</h3>
-        <p>Screen-capture Stan's trading sessions every 2 seconds. Record every buy/sell decision, oscillator state, and TickStrike reading. Build a labeled dataset of expert decisions over days and weeks.</p>
+        <p>Recording Stan's sessions live. Screen-capture every 2 seconds. Every buy/sell decision, oscillator state, and TickStrike reading captured in real time.</p>
       </div>
       <div class="vision-step" data-num="PHASE 02">
-        <span class="step-icon">🧠</span>
-        <h3>Learn</h3>
-        <p>Train an AI model on Stan's decision patterns. Cloud model (ChatGPT/Claude) for speed; local private model for data protection. Understand the IF/THEN logic behind 30 years of experience.</p>
+        <span class="step-icon">📊</span>
+        <h3>Capture</h3>
+        <p>Building the dataset. Every signal. Every decision. Every entry and exit — timestamped and mapped to oscillator state + TickStrike reading at that exact moment.</p>
       </div>
       <div class="vision-step" data-num="PHASE 03">
-        <span class="step-icon">🤖</span>
-        <h3>Mimic</h3>
-        <p>Deploy the trained model in paper trading (test mode) against live NQ data. Measure against Stan's performance. Calibrate. Refine. Confirm signal fidelity before real capital.</p>
+        <span class="step-icon">🧠</span>
+        <h3>Train</h3>
+        <p>Teaching the model Stan's logic — not just what he does, but the reasoning behind it. Cloud or local model decision TBD based on data sovereignty needs.</p>
       </div>
       <div class="vision-step" data-num="PHASE 04">
+        <span class="step-icon">🤖</span>
+        <h3>Mimic</h3>
+        <p>Automated execution matching Stan's system, running on an automation-compatible platform. Paper trading first. Calibrate. Confirm signal fidelity before real capital.</p>
+      </div>
+      <div class="vision-step" data-num="PHASE 05">
         <span class="step-icon">🚀</span>
         <h3>Surpass</h3>
-        <p>No burnout. No emotion. No 1-hour limit. A bot running the full session, every day, re-analyzing and self-improving. Stan's edge — amplified by automation and scale.</p>
+        <p>Running the full session. No burnout. No emotion. Continuous self-improvement. Stan's edge — amplified by automation, scale, and data-driven refinement.</p>
       </div>
     </div>
+
+    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:1rem; font-family:var(--mono); letter-spacing:0.05em;">Phase 1 is in progress. No timelines — we publish progress, not predictions. You're watching it get built.</p>
 
     <!-- Training question block -->
     <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 2rem; margin-top: 2rem;">
@@ -513,6 +520,91 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- TRAINING -->
+  <section id="training">
+    <div class="section-tag">03 / AI Training</div>
+    <h2 class="section-title">We haven't trained the AI yet.<br>Here's why that's the right call.</h2>
+    <p class="section-sub">Before you can teach a machine, you need to understand what it's learning. Phase 1 is capturing exactly how Stan thinks — not just what he does.</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5px;">
+      <div class="sys-card">
+        <div class="sys-card-num">OPTION A — PUBLIC / CLOUD</div>
+        <div class="sys-card-title">Cloud Model Training</div>
+        <p class="sys-card-sub">Train using commercial AI (Claude, GPT family). Fastest path to a working model. Broadest capability. Trade-off: training data leaves the local environment — Stan's proprietary edge sent to third-party APIs.</p>
+        <div class="tag-row">
+          <span class="tag tag-green">Fastest iteration</span>
+          <span class="tag tag-green">State-of-the-art models</span>
+          <span class="tag tag-dim">Data sovereignty risk</span>
+        </div>
+      </div>
+      <div class="sys-card">
+        <div class="sys-card-num">OPTION B — PRIVATE / LOCAL</div>
+        <div class="sys-card-title">Local Model Training</div>
+        <p class="sys-card-sub">Train using locally-hosted open models (Llama, Mistral via Ollama). Data never leaves our machines. Complete sovereignty over Stan's methodology. Trade-off: slower iteration, more infrastructure.</p>
+        <div class="tag-row">
+          <span class="tag tag-green">Full data sovereignty</span>
+          <span class="tag tag-green">No API dependency</span>
+          <span class="tag tag-dim">Infrastructure investment</span>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--bg-card); border:1px solid var(--border); padding:1.2rem 1.5rem; margin-top:1.5px; font-size:0.82rem; color:var(--text-dim);">
+      Both routes remain open. The training data contains Stan's proprietary edge — the data sovereignty decision matters. Evaluation ongoing.
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- FIRMS -->
+  <section id="firms">
+    <div class="section-tag">04 / Execution Platform</div>
+    <h2 class="section-title">Built for automation-compatible execution.</h2>
+    <p class="section-sub">Not all prop trading firms allow algorithmic trading. Tribune Trader was designed from day one for platforms that do. Stan's manual trading operates separately — the automation system runs on a different platform.</p>
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5px;">
+      <div class="sys-card">
+        <div class="sys-card-num">UNDER EVALUATION</div>
+        <div class="sys-card-title">Topstep</div>
+        <p class="sys-card-sub">Funded evaluation path for futures traders. NQ contracts available. Automation permitted — verify current terms directly with the firm.</p>
+        <div class="tag-row"><span class="tag tag-green">Automation permitted</span><span class="tag tag-dim">Verify current terms</span></div>
+      </div>
+      <div class="sys-card">
+        <div class="sys-card-num">UNDER EVALUATION</div>
+        <div class="sys-card-title">Apex Trader Funding</div>
+        <p class="sys-card-sub">Multiple account sizes. NQ contracts. Competitive evaluation structure. Automation permitted — verify current terms directly with the firm.</p>
+        <div class="tag-row"><span class="tag tag-green">Automation permitted</span><span class="tag tag-dim">Verify current terms</span></div>
+      </div>
+      <div class="sys-card">
+        <div class="sys-card-num">UNDER EVALUATION</div>
+        <div class="sys-card-title">Earn2Trade</div>
+        <p class="sys-card-sub">$50K/$100K/$150K account tiers. NQ futures. Automation permitted — verify current terms directly with the firm before opening a funded account.</p>
+        <div class="tag-row"><span class="tag tag-green">Automation permitted</span><span class="tag tag-dim">Verify current terms</span></div>
+      </div>
+    </div>
+    <p style="font-size:0.72rem; color:var(--text-muted); font-family:var(--mono); margin-top:1rem; padding:0.8rem 1rem; border:1px solid var(--border); letter-spacing:0.04em;">Prop firm policies on algorithmic trading change. Always verify current terms directly with the firm before opening a funded account for automated trading. The above reflects publicly available information as of 2026-08.</p>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-tag">05 / About</div>
+    <h2 class="section-title">The people building it.</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5px; margin-bottom:2rem;">
+      <div class="sys-card">
+        <div class="sys-card-num">THE SOFTWARE</div>
+        <div class="sys-card-title">Tribune Inc.</div>
+        <p class="sys-card-sub">Designs and builds the Tribune Trader technology — the monitoring systems, AI training pipeline, and automation engine. Jeff Rey and Ryan Poole.</p>
+      </div>
+      <div class="sys-card">
+        <div class="sys-card-num">THE TRADING</div>
+        <div class="sys-card-title">Tribune Trading (entity TBD)</div>
+        <p class="sys-card-sub">Operates the funded accounts and deploys the automation system. Jeff Rey, Ryan Poole, and Stan Smidt. Structure in formation.</p>
+      </div>
+    </div>
+    <p style="font-size:0.8rem; color:var(--text-dim);">This site is for demonstration and internal development purposes. Not financial advice. Not an offer to invest. Past performance is not indicative of future results.</p>
   </section>
 
   <hr class="divider">
@@ -576,8 +668,8 @@
   </div>
 
   <footer>
-    <div class="footer-logo">TRIBUNE TRADER — TRIBUNE INC.</div>
-    <div class="footer-disclaimer">INTERNAL PREVIEW — NOT FOR DISTRIBUTION — NOT FINANCIAL ADVICE</div>
+    <div class="footer-logo">TRIBUNE TRADER — TRIBUNE INC. © 2026</div>
+    <div class="footer-disclaimer">INTERNAL PREVIEW — NOT FINANCIAL ADVICE — NOT AN OFFER TO INVEST — PAST PERFORMANCE NOT INDICATIVE OF FUTURE RESULTS</div>
   </footer>
 
 </body>
