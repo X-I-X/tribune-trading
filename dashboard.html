@@ -542,7 +542,7 @@
     <!-- PANEL: ORDER FLOW / TICKSTRIKE -->
     <div class="panel panel-orderflow">
       <div class="panel-header">
-        <span class="panel-title">ORDER FLOW  -  TICKSTRIKE METER &nbsp;|&nbsp; NQ</span>
+        <span class="panel-title">ORDER FLOW  -  TICKSTRIKE &nbsp;|&nbsp; OVERRIDES ALL</span>
         <span class="panel-badge badge-demo">DEMO</span>
       </div>
       <div class="of-body">
@@ -640,7 +640,10 @@
         <div class="guide-section">
           <div class="guide-section-title">Panel 2: S949 Oscillator</div>
           <p>Stan's primary decision instrument. The oscillator runs on a ±40 scale. The dashed red line at 0 is the zero line -- the neutral midpoint between bullish and bearish momentum. Green segments indicate rising momentum; red indicates falling.</p>
-          <p><strong>What to look for:</strong> Divergence between the oscillator and price. In an uptrend, look for price making a higher low while the oscillator makes a lower low -- that disagreement is the Type 2 buy signal. BUY arrows mark confirmed bullish divergence. SELL arrows mark bearish divergence.</p>
+          <p><strong>What to look for:</strong> Divergence between price swing points and oscillator values at those same points. When the two slopes point in opposite directions, divergence is present.</p>
+          <p style="margin-top:6px;"><strong>Type 2 (Stan's preferred):</strong> With-trend. Uptrend: price higher low, oscillator lower low = Type 2 BUY. Downtrend: price lower high, oscillator higher high = Type 2 SELL.</p>
+          <p style="margin-top:6px;"><strong>Type 1:</strong> Against-trend reversal attempt. Higher high in price + lower high in oscillator = Type 1 SELL. Lower low in price + higher low in oscillator = Type 1 BUY.</p>
+          <p style="margin-top:6px;">Oscillator color: green = above zero, red = below zero. BUY/SELL arrows mark confirmed divergence points. The signal is the slope comparison, not the oscillator color alone.</p>
           <p style="font-size:0.75rem; color:var(--text-muted);">Note: Phase 1 oscillator is a realistic simulation. Stan's actual S949 is a proprietary NinjaTrader indicator. Live integration planned for Phase 2.</p>
         </div>
 
@@ -652,7 +655,8 @@
           <div class="guide-step"><span class="guide-step-num">9-10</span><span class="guide-step-text">Active. Watchable. Sometimes actionable with oscillator confirmation.</span></div>
           <div class="guide-step"><span class="guide-step-num">11-14</span><span class="guide-step-text"><strong>Sweet Spot.</strong> Decisive institutional aggression. This is what Stan waits for.</span></div>
           <div class="guide-step"><span class="guide-step-num">14+</span><span class="guide-step-text">Extreme. Strong but may signal exhaustion. Caution on new entries.</span></div>
-          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">Phase 1: simulated demo. Live FinancialJuice widget planned for Phase 2 (NQ coverage in free widget unconfirmed -- must verify at financialjuice.com).</p>
+          <p style="margin-top:8px; font-size:0.82rem; color:var(--text-dim);">Order flow takes precedence over everything. A divergence setup can be fully overridden by conflicting TickStrike pressure. Stan explicitly demonstrated this in session.</p>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">Phase 1: simulated demo. Live FinancialJuice widget planned for Phase 2 (NQ coverage in free widget unconfirmed -- must verify at financialjuice.com).</p>
         </div>
 
         <div class="guide-section">
@@ -822,9 +826,9 @@
       const x1 = pad.left + i * (plotW / (visiblePoints - 1));
       const y0 = scaleY(visible[i - 1]);
       const y1 = scaleY(visible[i]);
-      const rising = visible[i] >= visible[i - 1];
+      const midVal = (visible[i] + visible[i - 1]) / 2;
       ctx.beginPath();
-      ctx.strokeStyle = rising ? '#00e676' : '#ff1744';
+      ctx.strokeStyle = midVal >= 0 ? '#00e676' : '#ff1744';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([]);
       ctx.moveTo(x0, y0);

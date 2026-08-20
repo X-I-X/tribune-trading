@@ -293,8 +293,8 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
       <div class="card card-accent">
         <div class="eyebrow" style="margin-bottom: 16px;">Layer 01  -  Primary Signal</div>
         <h3>S949 Cyclical Momentum Oscillator</h3>
-        <p style="margin-top: 12px; font-size: 15px; color: var(--ash);">Developed by Rob Mitchell  -  one of the largest S&P futures traders of the 1980s. Stan received it personally. The S949 measures momentum's rate of change across the market's natural cycle. Its signature insight: price and momentum diverge before a reversal confirms.</p>
-        <p style="margin-top: 14px; font-size: 15px; color: var(--ash);">Stan's analogy: a rocket reaching its apex still appears to be climbing  -  but the fuel is spent. The oscillator shows this before price does.</p>
+        <p style="margin-top: 12px; font-size: 15px; color: var(--ash);">Developed by Rob Mitchell  -  one of the largest S&P futures traders of the 1980s. Stan received it personally. The S949 measures momentum's rate of change across the market's natural cycle. Its signal: compare swing point slopes. Draw a line connecting two significant price lows (or highs). Draw the same line on the oscillator at those exact same moments. When the two slopes point in opposite directions, there is divergence.</p>
+        <p style="margin-top: 14px; font-size: 15px; color: var(--ash);">Stan's analogy: a rocket reaching its apex still appears to be climbing  -  but the fuel is spent. The oscillator shows this before price does. Oscillator reads above zero are positive (green), below zero are negative (red).</p>
 
         <div class="osc-scale">
           <div class="osc-zone zone-bull-strong">
@@ -320,7 +320,7 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
         </div>
 
         <div class="tag-row">
-          <span class="tag tag-tyrian">Type 2 Divergence</span>
+          <span class="tag tag-tyrian">Type 1 Divergence</span><span class="tag tag-tyrian">Type 2 Divergence</span>
           <span class="tag tag-tyrian">Gann Swing</span>
           <span class="tag">NinjaTrader</span>
           <span class="tag">±40 Scale</span>
@@ -329,10 +329,11 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
 
       <!-- TickStrike -->
       <div class="card card-accent">
-        <div class="eyebrow" style="margin-bottom: 16px;">Layer 02  -  Real-Time Confirmation</div>
+        <div class="eyebrow" style="margin-bottom: 16px;">Layer 02  -  Order Flow Override</div>
         <h3>TickStrike Order Flow Meter</h3>
         <p style="margin-top: 12px; font-size: 15px; color: var(--ash);">FinancialJuice's TickStrike captures what's happening inside the market right now  -  before the candle closes. Visual (green = buying, red = selling) and audio (sparse ticks vs machine-gun cadence). Stan: <em>"Nothing tells you what's going on right this second except order flow."</em></p>
         <p style="margin-top: 12px; font-size: 15px; color: var(--ash);">What it's detecting: institutional algorithmic activity. BofA, Wells Fargo hedging their books. The big money before it shows up in price.</p>
+        <p style="margin-top: 12px; font-size: 15px; color: var(--error); font-weight: 600;">Order flow takes precedence over everything else. A valid divergence setup can be overridden by conflicting TickStrike pressure. Stan demonstrated this explicitly: large Type 2 short setup  -  TickStrike at level 10 buying  -  he followed the order flow.</p>
 
         <table class="ts-scale">
           <thead><tr><th>Level</th><th>Label</th><th>Meaning</th></tr></thead>
@@ -358,7 +359,7 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
     <div style="margin-top: 48px;">
       <div class="eyebrow">Signal Interpretation</div>
       <h3 style="font-size: 22px; margin-bottom: 8px;">The composite read. Every second.</h3>
-      <p style="font-size: 15px; color: var(--ash); margin-bottom: 28px;">The oscillator determines the structural setup. TickStrike confirms or contradicts it in real time. The intersection of both defines the signal state.</p>
+      <p style="font-size: 15px; color: var(--ash); margin-bottom: 28px;">TickStrike defines whether you act. The oscillator identifies the structural setup. TickStrike confirms  -  or overrides  -  it in real time. When order flow disagrees with a divergence signal, order flow wins.</p>
       <div class="grid grid-3">
         <div class="signal-card confirmed">
           <div class="signal-label"><span class="signal-dot"></span> Confirmed</div>
@@ -371,6 +372,77 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
         <div class="signal-card neutral">
           <div class="signal-label"><span class="signal-dot"></span> Neutral</div>
           <p style="font-size: 14.5px; color: var(--ash);">TickStrike below 9. Low conviction on both sides. No decisive institutional pressure. Signals generated here are unconfirmed  -  avoid.</p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- DIVERGENCE TYPES -->
+    <div style="margin-top: 48px;">
+      <div class="eyebrow">Divergence Patterns</div>
+      <h3 style="font-size: 22px; margin-bottom: 8px;">Four patterns. Two types. One system.</h3>
+      <p style="font-size: 15px; color: var(--ash); margin-bottom: 28px;">Type 1 attempts to identify reversals (against the trend). Type 2 identifies continuations (with the trend). Stan's preferred setup is Type 2. Both types can be a buy or a sell depending on trend direction.</p>
+      <div class="grid grid-2" style="gap: 20px;">
+        <div class="card" style="border-left: 3px solid var(--green);">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--green); margin-bottom:10px;">Type 2  -  With Trend  -  Stan's Preferred</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:var(--green); margin-bottom:6px;">TYPE 2 BUY</div>
+              <div style="font-size:13px; color:var(--ash); line-height:1.7;">Trend: UP<br>Price: higher low ↗<br>Oscillator: lower low ↘<br><em style="color:var(--text-dim);">Slopes oppose. Uptrend intact. Buy the continuation.</em></div>
+            </div>
+            <div>
+              <div style="font-size:13px; font-weight:700; color:var(--error); margin-bottom:6px;">TYPE 2 SELL</div>
+              <div style="font-size:13px; color:var(--ash); line-height:1.7;">Trend: DOWN<br>Price: lower high ↘<br>Oscillator: higher high ↗<br><em style="color:var(--text-dim);">Slopes oppose. Downtrend intact. Sell the continuation.</em></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--amber);">
+          <div style="font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--amber); margin-bottom:10px;">Type 1  -  Against Trend  -  Reversal Attempt</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:var(--error); margin-bottom:6px;">TYPE 1 SELL</div>
+              <div style="font-size:13px; color:var(--ash); line-height:1.7;">Price: higher high ↗<br>Oscillator: lower high ↘<br><em style="color:var(--text-dim);">Price at new high, momentum exhausted. Potential top.</em></div>
+            </div>
+            <div>
+              <div style="font-size:13px; font-weight:700; color:var(--green); margin-bottom:6px;">TYPE 1 BUY</div>
+              <div style="font-size:13px; color:var(--ash); line-height:1.7;">Price: lower low ↘<br>Oscillator: higher low ↗<br><em style="color:var(--text-dim);">Price at new low, momentum recovering. Potential bottom.</em></div>
+            </div>
+          </div>
+          <p style="font-size:12px; color:var(--ash); margin-top:12px; padding-top:10px; border-top:1px solid var(--line);">Type 1 risk: nothing stops price from continuing in the existing direction. Use with caution. Type 1 BUY is the logical mirror of Stan's confirmed Type 1 SELL  -  pending explicit confirmation from Stan.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIBONACCI ENTRY -->
+    <div style="margin-top: 48px;">
+      <div class="eyebrow">Layer 03  -  Entry Timing</div>
+      <h3 style="font-size: 22px; margin-bottom: 8px;">Custom Fibonacci: don't chase the trade.</h3>
+      <p style="font-size: 15px; color: var(--ash); margin-bottom: 20px;">After a divergence signal is confirmed by TickStrike, Stan does not enter immediately at candle close. He measures the relevant move with a customized Fibonacci retracement tool and waits for price to pull back to a preferred level.</p>
+      <div class="card" style="border-left: 3px solid var(--tyrian);">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px;">
+          <div>
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--tyrian-deep); margin-bottom:10px;">The Process</div>
+            <ol style="font-size:14.5px; color:var(--ash); line-height:2; padding-left:18px;">
+              <li>Divergence detected + TickStrike confirms</li>
+              <li>Measure the relevant price move</li>
+              <li>Draw Stan's custom Fib retracement</li>
+              <li>Wait for price to retrace to a preferred level</li>
+              <li>Enter at that level  -  or not at all</li>
+            </ol>
+            <p style="font-size:13px; color:var(--ash); margin-top:12px;"><em>Stan: "I would rather not be filled than chase the trade."</em></p>
+          </div>
+          <div>
+            <div style="font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--tyrian-deep); margin-bottom:10px;">Stan's Custom Levels (approximate)</div>
+            <div style="font-size:13px; color:var(--ash); line-height:2; font-family:var(--mono);">
+              28.6% &nbsp; Shallow pullback<br>
+              42.9% &nbsp; Common entry zone<br>
+              50.0% &nbsp; Midpoint<br>
+              57.29% &nbsp; Key level<br>
+              85.8% &nbsp; "Sniper" level<br>
+              100% &nbsp; Full retracement
+            </div>
+            <p style="font-size:12px; color:var(--ash); margin-top:10px; padding-top:8px; border-top:1px solid var(--line);">These are NOT standard textbook Fibonacci values (23.6 / 38.2 / 61.8). Stan's exact NinjaTrader template settings are required to confirm the full set. Levels are approximate pending that confirmation.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -421,8 +493,22 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
           <div class="preview-panel-label">S949 Oscillator</div>
           <div class="preview-osc-wave">
             <svg width="100%" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
-              <line x1="0" y1="30" x2="200" y2="30" stroke="#c41e3a" stroke-width="0.5" stroke-dasharray="3,4" opacity="0.5"/>
-              <polyline points="0,40 20,25 40,38 60,15 80,28 100,10 120,22 140,18 160,30 180,25 200,20" fill="none" stroke="#00e676" stroke-width="1.5"/>
+              <!-- Zero line -->
+              <line x1="0" y1="30" x2="200" y2="30" stroke="#c41e3a" stroke-width="0.8" stroke-dasharray="3,4" opacity="0.6"/>
+              <!-- Red segment: below zero (y > 30) -->
+              <polyline points="0,42 20,50 40,38" fill="none" stroke="#ff1744" stroke-width="1.5"/>
+              <!-- Transition at zero crossing ~x=50 -->
+              <polyline points="40,38 55,30" fill="none" stroke="#ff1744" stroke-width="1.5"/>
+              <!-- Green segment: above zero (y < 30) -->
+              <polyline points="55,30 80,14 100,10 120,18 140,22" fill="none" stroke="#00e676" stroke-width="1.5"/>
+              <!-- Drop back toward zero -->
+              <polyline points="140,22 160,30" fill="none" stroke="#00e676" stroke-width="1.5"/>
+              <!-- Red again: below zero -->
+              <polyline points="160,30 180,36 200,32" fill="none" stroke="#ff1744" stroke-width="1.5"/>
+              <!-- BUY arrow at x=55 (zero cross up) -->
+              <polygon points="55,28 52,22 58,22" fill="#00e676" opacity="0.9"/>
+              <!-- SELL arrow at x=160 (zero cross down) -->
+              <polygon points="160,32 157,38 163,38" fill="#ff1744" opacity="0.9"/>
             </svg>
           </div>
           <div style="font-family:var(--mono);font-size:11px;color:rgba(0,230,118,.8);margin-top:6px;">+18.4 ↑ BULLISH</div>
@@ -706,7 +792,9 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
           <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">S949</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">Stan's primary oscillator. Developed by Rob Mitchell. Runs on a +/-40 scale inside NinjaTrader. Core signal: divergence between oscillator and price.</dd></div>
           <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">TickStrike</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">Real-time order flow meter by FinancialJuice. Green = buying, red = selling. Scale 0-16+. Stan's sweet spot: 11-14. Two channels: visual and audio.</dd></div>
           <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">Divergence</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">When price and oscillator move in opposite directions at comparable swing points. The core trade signal in Stan's system. Price goes higher, but momentum goes lower -- the fuel is spent.</dd></div>
-          <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">Type 2 Divergence</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">With-trend divergence. Stan's preferred setup. In an uptrend: price higher low, oscillator lower low. Entry at signal candle close. Target: prior swing high.</dd></div>
+          <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">Type 1 Divergence</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">Against-trend divergence. Attempts to identify a reversal (top or bottom). Type 1 SELL: price higher high, oscillator lower high. Type 1 BUY: price lower low, oscillator higher low. Higher risk  -  nothing prevents price from continuing the existing trend.</dd></div>
+          <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">Type 2 Divergence</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">With-trend divergence. Stan's preferred setup. In an uptrend: price higher low, oscillator lower low (slopes oppose). In a downtrend: price lower high, oscillator higher high. Identifies a continuation entry.</dd></div>
+          <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">Fibonacci Retracement (Custom)</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">Stan's entry timing tool. After a confirmed divergence signal, he waits for price to retrace to a Fibonacci level before entering. His levels are non-standard: ~28.6%, 42.9%, 50%, 57.29%, 85.8%, 100%. Exact template settings TBD. Stan's rule: no fill is acceptable  -  never chase the trade.</dd></div>
           <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">Gann Swing</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">Stan's method for identifying pivot points. More structurally precise than standard zigzag. A bar qualifies as a swing high/low only when higher/lower than both adjacent bars.</dd></div>
           <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">Trailing Drawdown</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">Dynamic maximum loss limit that follows peak balance upward. At TPT PRO: tracks unrealized peak equity in real time (intraday). Once the floor reaches starting balance, it locks permanently.</dd></div>
           <div style="padding:12px 20px; border-bottom:1px solid var(--line);"><dt style="font-family:var(--mono); font-size:12px; font-weight:600; color:var(--obsidian); margin-bottom:4px;">Order Flow</dt><dd style="font-size:14px; color:var(--ash); line-height:1.6;">The real-time balance of aggressive buying vs. aggressive selling. TickStrike measures this. Reflects what institutional algorithms are doing at this exact moment.</dd></div>
