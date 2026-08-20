@@ -168,13 +168,110 @@
     [83,  5],   [86,  -12], [90,  10],   // late session recovery
   ];
 
+  // ── Candlestick data (OHLC for 8/17/2026 session, derived from forensic image analysis) ──
+  // [bar, open, high, low, close]  — bar 0=premarket start, 27=PIT OPEN, 83=PIT CLOSE
+  const CANDLES = [
+    [2,  30270, 30295, 30262, 30285],
+    [6,  30240, 30262, 30228, 30255],
+    [10, 30255, 30278, 30248, 30268],
+    [14, 30262, 30292, 30258, 30287],
+    [18, 30282, 30302, 30276, 30295],
+    [23, 30290, 30314, 30283, 30295],  // session high candle — touches 30314 resistance
+    [27, 30295, 30298, 30258, 30264],  // RED — reversal begins at PIT OPEN
+    [31, 30268, 30278, 30228, 30240],  // red
+    [35, 30240, 30252, 30192, 30205],  // red — acceleration
+    [38, 30208, 30220, 30168, 30178],  // red
+    [40, 30178, 30188, 30158, 30165],  // red — BUY T1 low
+    [43, 30165, 30212, 30158, 30205],  // green — bounce begins
+    [46, 30205, 30242, 30198, 30235],  // green
+    [50, 30232, 30258, 30225, 30250],  // green — SELL T2 lower high 30250
+    [54, 30250, 30258, 30214, 30222],  // red — second decline begins
+    [58, 30222, 30228, 30178, 30190],  // red
+    [62, 30190, 30202, 30146, 30155],  // red — osc building upward (divergence)
+    [65, 30155, 30168, 30128, 30140],  // red — SELL T2 at 30140 (osc SPIKE +42)
+    [68, 30140, 30148, 30092, 30098],  // red — strong down
+    [72, 30098, 30118, 30070, 30078],  // red — approaching session low
+    [73, 30075, 30112, 30068, 30095],  // GREEN — BUY T2 — session low reversal candle
+    [77, 30095, 30142, 30088, 30128],  // green
+    [81, 30128, 30138, 30078, 30086],  // red
+    [85, 30086, 30102, 30073, 30078],  // red — near close
+    [88, 30078, 30096, 30062, 30068],  // red — close near lows
+  ];
+
+  // ── Candlestick renderer ──────────────────────────────────────────────────
+  function candlestickBars(candles) {
+    const barsPerUnit = PLOT_W / MAX_BARS;
+    const bodyW = Math.max(barsPerUnit * 2.8, 4);
+    return candles.map(([bar, open, high, low, close]) => {
+      const x = px(bar);
+      const yH = py(high), yL = py(low);
+      const yO = py(open), yC = py(close);
+      const isGreen = close >= open;
+      const col = isGreen ? '#00c853' : '#e53935';
+      const bodyTop = Math.min(yO, yC);
+      const bodyH = Math.max(Math.abs(yO - yC), 1.5);
+      return `<g>
+        <line x1="${x.toFixed(1)}" y1="${yH.toFixed(1)}" x2="${x.toFixed(1)}" y2="${yL.toFixed(1)}" stroke="${col}" stroke-width="1.2" opacity="0.9"/>
+        <rect x="${(x - bodyW/2).toFixed(1)}" y="${bodyTop.toFixed(1)}" width="${bodyW.toFixed(1)}" height="${bodyH.toFixed(1)}" fill="${col}" rx="0.5"/>
+      </g>`;
+    }).join('\n');
+  }
+
+  // ── Fibonacci retracement lines (Stan's custom levels, blue) ─────────────
+  // Anchored to the key afternoon swing: 30,250 (bar 50 high) → 30,075 (bar 73 low)
+  // Fib levels show potential retracement entry zones after the BUY T2 signal
+  function fibLines() {
+    const swingHigh = 30250;  // bar 50 — lower high (SELL T2)
+    const swingLow  = 30075;  // bar 73 — session low (BUY T2)
+    const range = swingHigh - swingLow;  // 175 pts
+    const xStart = px(73);  // anchor from the BUY signal bar
+    const xEnd   = px(90);
+
+    const levels = [
+      { pct: 0.286, label: '28.6%' },
+      { pct: 0.429, label: '42.9%' },
+      { pct: 0.500, label: '50.0%' },
+      { pct: 0.573, label: '57.3%' },
+      { pct: 0.858, label: '85.8% ★', sniper: true },
+    ];
+
+    // Also draw the anchor swing bracket
+    const bracketX = (px(68) + 2).toFixed(1);
+    const yHigh = py(swingHigh).toFixed(1);
+    const yLow  = py(swingLow).toFixed(1);
+    const bracket = `
+      <line x1="${bracketX}" y1="${yHigh}" x2="${bracketX}" y2="${yLow}" stroke="rgba(68,136,255,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="${bracketX}" y1="${yHigh}" x2="${(parseFloat(bracketX)+6).toFixed(1)}" y2="${yHigh}" stroke="rgba(68,136,255,0.4)" stroke-width="1"/>
+      <line x1="${bracketX}" y1="${yLow}"  x2="${(parseFloat(bracketX)+6).toFixed(1)}" y2="${yLow}"  stroke="rgba(68,136,255,0.4)" stroke-width="1"/>
+      <text x="${(parseFloat(bracketX)+8).toFixed(1)}" y="${(parseFloat(yHigh)+4).toFixed(1)}" fill="rgba(68,136,255,0.6)" font-size="6.5" font-family="JetBrains Mono,monospace">30,250</text>
+      <text x="${(parseFloat(bracketX)+8).toFixed(1)}" y="${(parseFloat(yLow)+4).toFixed(1)}"  fill="rgba(68,136,255,0.6)" font-size="6.5" font-family="JetBrains Mono,monospace">30,075</text>
+    `;
+
+    const lines = levels.map(({ pct, label, sniper }) => {
+      const price = Math.round(swingLow + range * pct);
+      const y = py(price);
+      if (y < PAD.top || y > PAD.top + H_PRICE) return '';
+      const col  = sniper ? 'rgba(153,85,255,0.85)' : 'rgba(68,136,255,0.75)';
+      const bgcol = sniper ? 'rgba(153,85,255,0.12)' : 'rgba(68,136,255,0.10)';
+      const lw   = sniper ? 1.6 : 1.1;
+      const labelX = xEnd - 2;
+      return `
+        <line x1="${xStart.toFixed(1)}" y1="${y.toFixed(1)}" x2="${xEnd.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${col}" stroke-width="${lw}" stroke-dasharray="${sniper ? '6,3' : '4,4'}" opacity="0.9"/>
+        <rect x="${(xEnd - 46).toFixed(1)}" y="${(y - 8).toFixed(1)}" width="46" height="11" rx="2" fill="${bgcol}"/>
+        <text x="${(labelX - 2).toFixed(1)}" y="${(y + 2).toFixed(1)}" text-anchor="end" fill="${col}" font-size="7.5" font-family="JetBrains Mono,monospace" font-weight="${sniper ? '700' : '500'}">${label}</text>
+        <text x="${(xEnd - 48).toFixed(1)}" y="${(y - 10).toFixed(1)}" text-anchor="end" fill="${col}" font-size="6" font-family="JetBrains Mono,monospace" opacity="0.7">${price.toLocaleString()}</text>`;
+    }).join('\n');
+
+    return `<g id="fib-group" opacity="1">${bracket}${lines}</g>`;
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────────────
   function coloredOscPath(pts) {
     return pts.slice(1).map((p, i) => {
       const x0 = px(pts[i][0]), y0 = oy(pts[i][1]);
       const x1 = px(p[0]),      y1 = oy(p[1]);
-      const rising = p[1] >= pts[i][1];
-      return `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${rising ? '#00c853' : '#ff1744'}" stroke-width="2.2" stroke-linecap="round"/>`;
+      const midVal = (p[1] + pts[i][1]) / 2;
+      return `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${midVal >= 0 ? '#00c853' : '#ff1744'}" stroke-width="2.2" stroke-linecap="round"/>`;
     }).join('\n');
   }
 
@@ -184,6 +281,10 @@
 
   function signalMark(sig, panel) {
     const x = px(sig.bar);
+    const isT2 = sig.divType === 'Type 2';
+    const typeCol = isT2 ? '#4488ff' : '#ffab00';
+    const typeLabel = isT2 ? 'T2' : 'T1';
+
     if (panel === 'price') {
       const y = py(sig.price);
       const isBuy = sig.type === 'BUY';
@@ -193,12 +294,16 @@
           <polygon points="${x},${(y+16).toFixed(1)} ${(x-5).toFixed(1)},${(y+26).toFixed(1)} ${(x+5).toFixed(1)},${(y+26).toFixed(1)}" fill="${col}"/>
           <text x="${x}" y="${(y+38).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="7.5" font-family="JetBrains Mono,monospace" font-weight="700">BUY</text>
           <text x="${x}" y="${(y+48).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="6.5" font-family="JetBrains Mono,monospace" opacity=".8">${sig.price.toLocaleString()}</text>
+          <rect x="${(x-9).toFixed(1)}" y="${(y+52).toFixed(1)}" width="18" height="11" rx="2" fill="${typeCol}" opacity=".15"/>
+          <text x="${x}" y="${(y+61).toFixed(1)}" text-anchor="middle" fill="${typeCol}" font-size="7" font-family="JetBrains Mono,monospace" font-weight="700">${typeLabel}</text>
         </g>`;
       } else {
         return `<g class="sig-marker" data-sig="${sig.id}" style="cursor:pointer">
           <polygon points="${x},${(y-16).toFixed(1)} ${(x-5).toFixed(1)},${(y-26).toFixed(1)} ${(x+5).toFixed(1)},${(y-26).toFixed(1)}" fill="${col}"/>
           <text x="${x}" y="${(y-28).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="7.5" font-family="JetBrains Mono,monospace" font-weight="700">SELL</text>
           <text x="${x}" y="${(y-38).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="6.5" font-family="JetBrains Mono,monospace" opacity=".8">${sig.price.toLocaleString()}</text>
+          <rect x="${(x-9).toFixed(1)}" y="${(y-54).toFixed(1)}" width="18" height="11" rx="2" fill="${typeCol}" opacity=".15"/>
+          <text x="${x}" y="${(y-45).toFixed(1)}" text-anchor="middle" fill="${typeCol}" font-size="7" font-family="JetBrains Mono,monospace" font-weight="700">${typeLabel}</text>
         </g>`;
       }
     } else {
@@ -206,9 +311,12 @@
       const col = sig.highlight ? '#ff6b00' : (sig.type === 'BUY' ? '#00c853' : '#e040fb');
       const label = sig.oscReading > 0 ? `+${sig.oscReading}` : `${sig.oscReading}`;
       const yTxt = sig.oscReading >= 0 ? yo - 9 : yo + 15;
+      const yType = sig.oscReading >= 0 ? yo - 18 : yo + 24;
       return `<g class="sig-marker" data-sig="${sig.id}" style="cursor:pointer">
         <circle cx="${x}" cy="${yo.toFixed(1)}" r="${sig.highlight ? 6 : 4.5}" fill="${col}" opacity=".9"/>
         <text x="${x}" y="${yTxt.toFixed(1)}" text-anchor="middle" fill="${col}" font-size="7" font-family="JetBrains Mono,monospace" font-weight="700">${label}</text>
+        <rect x="${(x-9).toFixed(1)}" y="${(yType - 8).toFixed(1)}" width="18" height="10" rx="2" fill="${typeCol}" opacity=".18"/>
+        <text x="${x}" y="${yType.toFixed(1)}" text-anchor="middle" fill="${typeCol}" font-size="6.5" font-family="JetBrains Mono,monospace" font-weight="700">${typeLabel}</text>
       </g>`;
     }
   }
@@ -327,7 +435,8 @@
     const priceMarks = SIGNALS.map(s => signalMark(s, 'price')).join('\n');
     const oscMarks = SIGNALS.map(s => signalMark(s, 'osc')).join('\n');
     const oscLines = coloredOscPath(OSC_CURVE);
-    const pricePath = pricePolyline(PRICE_CURVE);
+    const candleBars = candlestickBars(CANDLES);
+    const fibLevelLines = fibLines();
 
     return `<svg viewBox="0 0 ${viewW + 30} ${viewH}" xmlns="http://www.w3.org/2000/svg" id="session-svg" style="width:100%;height:auto;display:block;">
   <defs>
@@ -347,8 +456,11 @@
   ${resistLine}
   ${panelLabels}
 
-  <!-- Price path -->
-  <path d="${pricePath}" fill="none" stroke="#0A0B12" stroke-width="1.8" stroke-linejoin="round"/>
+  <!-- Price candlesticks -->
+  ${candleBars}
+
+  <!-- Fibonacci retracement levels (Stan's custom entry levels, blue) -->
+  ${fibLevelLines}
 
   <!-- Gann swing arrows (price + oscillator panels) -->
   ${gAnns}
@@ -519,6 +631,9 @@
         <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#ff6b00;">| Strongest divergence</span>
         <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#7A1A5C;">--- Div connector</span>
         <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#1a1a2a;">→ Gann swing</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#4488ff;">— Fib entry levels</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#4488ff;">T2</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#ffab00;">T1</span>
       </div>
     </div>
     ${buildSVG()}
