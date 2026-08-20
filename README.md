@@ -25,3 +25,4 @@ The project goal: monitor Stan, train AI on his decision-making, then run it aut
 ## Not Financial Advice
 
 This is a demonstration dashboard for internal use. Not financial advice.
+
