@@ -767,7 +767,7 @@
   let sessionHigh = 0, sessionLow = Infinity;
   let oscFrame = 0;
 
-  // ── Market data fetch (QQQ 5-min via Yahoo Finance) ──────────────────────
+  // ── Market data fetch (QQQ 1-min via Yahoo Finance proxy) ───────────────
   async function fetchMarketData() {
     try {
       const resp = await fetch('/.netlify/functions/market-data', { cache: 'no-store' });
@@ -787,14 +787,13 @@
                          .filter(b => b.c > 0 && b.h > 0 && b.l > 0);
       if (allValid.length < 5) throw new Error('insufficient data');
 
-      // Compute CMO across full 5-day history — yesterday provides 78+ bars of warmup.
-      // CMO(14) on 5-min bars needs 15 bars min. Spread: zeros prepended for first 14 bars.
+      // Compute CMO across full 7-day history (1-min bars) — deep warmup guaranteed.
       const allCloses = allValid.map(b => b.c);
       const cmoRaw = computeCMO(allCloses, 14);
       const allOsc = [...Array(allCloses.length - cmoRaw.length).fill(0), ...cmoRaw];
 
       // Filter display to today's session only (UTC date match)
-      const todayUTC = new Date().toISOString().slice(0, 10); // e.g. "2026-08-20"
+      const todayUTC = new Date().toISOString().slice(0, 10);
       const todayPairs = allValid
         .map((b, i) => ({ b, i }))
         .filter(({ b }) => new Date(b.t).toISOString().slice(0, 10) === todayUTC);
@@ -805,12 +804,28 @@
       priceHighs    = todayPairs.map(({ b }) => b.h);
       priceLows     = todayPairs.map(({ b }) => b.l);
       const rawOscSlice = todayPairs.map(({ i }) => allOsc[i]);
-      // Sanity: if all-zero (warmup not effective), fall back to SIM
       if (!rawOscSlice.some(v => Math.abs(v) > 0.01)) throw new Error('CMO flat — SIM fallback');
       oscData = rawOscSlice;
       sessionHigh   = Math.max(...priceHighs);
       sessionLow    = Math.min(...priceLows);
       sessionOpen   = barTimestamps[0];
+
+      // ── Live partial bar — extends oscillator with current tick price ─────────
+      // regularMarketPrice updates every ~15s on Yahoo. Appending it as a "forming"
+      // bar gives the oscillator a live right-edge value that moves with the market.
+      const livePrice = result.meta?.regularMarketPrice;
+      if (livePrice && allCloses.length >= 14) {
+        const extCloses = [...allCloses, livePrice];
+        const extCMO    = computeCMO(extCloses, 14);
+        if (extCMO.length > 0) {
+          const liveOscVal = parseFloat(extCMO[extCMO.length - 1].toFixed(2));
+          oscData.push(liveOscVal);
+          priceData.push(livePrice);
+          barTimestamps.push(Date.now());
+          sessionHigh = Math.max(sessionHigh, livePrice);
+          sessionLow  = Math.min(sessionLow,  livePrice);
+        }
+      }
 
       marketIsLive = true;
       lastFetchTs = Date.now();
@@ -1156,7 +1171,7 @@
   initSimulation();
   markers = findMarkers(oscData);
   refreshData();
-  setInterval(refreshData, 30000);
+  setInterval(refreshData, 10000); // 10s — live price updates every ~15s on Yahoo
   animOscillator();
 
   // ═══════════════════════════════════════════════════════════════

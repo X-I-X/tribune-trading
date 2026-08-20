@@ -7,7 +7,7 @@ const https = require('https');
 exports.handler = async function () {
   const url =
     'https://query1.finance.yahoo.com/v8/finance/chart/QQQ' +
-    '?interval=5m&range=5d&includePrePost=false';
+    '?interval=1m&range=7d&includePrePost=false';
 
   try {
     const data = await new Promise((resolve, reject) => {
