@@ -1,6 +1,10 @@
 [functions]
   directory = "netlify/functions"
 
+[[edge_functions]]
+  function = "auth-gate"
+  path = "/*"
+
 [[headers]]
   for = "/*"
   [headers.values]
