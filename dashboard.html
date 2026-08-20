@@ -843,8 +843,14 @@
       p += move;
       priceData.push(parseFloat(p.toFixed(2)));
     }
-    oscData = computeCMO(priceData, 14);
-    while (oscData.length < priceData.length) oscData.unshift(0);
+    // SIM mode: smooth sinusoidal oscillator — CMO from tiny sim prices is jagged/useless
+    oscData = [];
+    for (let i = 0; i < count; i++) {
+      const t = i * 0.07;
+      const noise = (Math.random() - 0.5) * 2;
+      const v = Math.sin(t) * 22 + Math.sin(t * 1.7 + 1.2) * 12 + Math.sin(t * 0.4) * 6 + noise;
+      oscData.push(parseFloat(Math.max(-38, Math.min(38, v)).toFixed(2)));
+    }
     sessionHigh = Math.max(...priceData);
     sessionLow  = Math.min(...priceData);
     barTimestamps = priceData.map((_, i) => Date.now() - (priceData.length - i) * 300000);
@@ -1110,7 +1116,7 @@
     await fetchMarketData();
     markers = findMarkers(oscData);
     updateOscUI();
-    syncOverlayToMarket();
+    syncOverlayToMarket(); // rebuild overlay from fresh pairs
   }
 
   // ── Animation loop ────────────────────────────────────────────────────────
@@ -1258,14 +1264,7 @@
         alpha: 0, age: 0, holdFrames: 300,
       };
     });
-    // If no real pairs, use concept demo positions
-    if (divAnnotations.length === 0) {
-      const w = divCanvas.width, h = divCanvas.height;
-      divAnnotations = [
-        { type:'TYPE 2', dir:'BUY',  pxA:{x:w*0.28,y:h*0.70}, pxB:{x:w*0.54,y:h*0.60}, color:'#00e676', alpha:0, age:0, holdFrames:240 },
-        { type:'TYPE 1', dir:'SELL', pxA:{x:w*0.60,y:h*0.30}, pxB:{x:w*0.80,y:h*0.26}, color:'#ffab00', alpha:0, age:0, holdFrames:280 },
-      ];
-    }
+    // No real pairs — show nothing (no demo loop)
   }
 
   function drawDivergenceOverlay() {
@@ -1278,7 +1277,7 @@
       if      (ann.age < 40)              ann.alpha = ann.age / 40;
       else if (ann.age < ann.holdFrames)  ann.alpha = 1;
       else                                ann.alpha = Math.max(0, 1 - (ann.age - ann.holdFrames) / 40);
-      if (ann.age > ann.holdFrames + 40) ann.age = 0; // loop annotation
+      // annotations expire — no loop reset
       if (ann.alpha <= 0) return;
 
       divCtx.save();
