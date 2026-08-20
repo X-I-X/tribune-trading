@@ -96,7 +96,7 @@
       flex: 1;
       display: grid;
       grid-template-columns: 1fr 320px;
-      grid-template-rows: 1fr 200px;
+      grid-template-rows: 1fr 280px;
       gap: 1px;
       background: var(--border);
       overflow: hidden;
@@ -111,8 +111,8 @@
       flex-direction: column;
     }
     .panel-chart { grid-column: 1; grid-row: 1; }
-    .panel-oscillator { grid-column: 2; grid-row: 1; }
-    .panel-orderflow { grid-column: 1; grid-row: 2; }
+    .panel-oscillator { grid-column: 1; grid-row: 2; }
+    .panel-orderflow { grid-column: 2; grid-row: 1; }
     .panel-signal { grid-column: 2; grid-row: 2; }
 
     .panel-header {
@@ -420,6 +420,22 @@
       html, body { overflow: auto; height: auto; }
       .dashboard-grid { min-height: 800px; }
     }
+    /* FIB LEVEL CHIPS */
+    .fib-level-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.48rem; letter-spacing: 0.06em;
+      padding: 2px 6px; border-radius: 2px;
+      border: 1px solid rgba(68,136,255,0.3);
+      color: #4488ff; background: rgba(68,136,255,0.06);
+      cursor: default; transition: all 0.3s;
+      white-space: nowrap;
+    }
+    .fib-level-chip.active {
+      border-color: rgba(68,136,255,0.8);
+      background: rgba(68,136,255,0.2);
+      box-shadow: 0 0 8px rgba(68,136,255,0.4);
+      color: #88bbff;
+    }
   </style>
 </head>
 <body>
@@ -504,11 +520,13 @@
           <span class="panel-badge badge-live">LIVE</span>
         </div>
       </div>
-      <div class="chart-container">
+      <div class="chart-container" style="position:relative;">
         <div class="tradingview-widget-container" style="height:100%;width:100%">
           <div id="tradingview_nq_chart" style="height:100%;width:100%"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
         </div>
+        <canvas id="divergenceOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10;"></canvas>
+        <div style="position:absolute;top:8px;right:8px;z-index:11;font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.1em;color:rgba(198,163,90,0.7);background:rgba(5,5,7,0.7);padding:3px 8px;border:1px solid rgba(198,163,90,0.2);border-radius:2px;pointer-events:none;">⬡ AI DIVERGENCE DETECTION — PHASE 1 DEMO</div>
       </div>
     </div>
 
@@ -534,6 +552,16 @@
           <div class="osc-reading">
             <div class="osc-reading-label">SIGNAL</div>
             <div class="osc-reading-val val-gold" id="oscSignal">TYPE 2</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;padding:2px 0;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:0.12em;color:#4488ff;text-transform:uppercase;">Fib Entry</span>
+          <div style="display:flex;gap:4px;flex:1;" id="fibLevelRow">
+            <div class="fib-level-chip" data-level="28.6">28.6%</div>
+            <div class="fib-level-chip" data-level="42.9">42.9%</div>
+            <div class="fib-level-chip" data-level="50.0">50.0%</div>
+            <div class="fib-level-chip" data-level="57.3">57.3%</div>
+            <div class="fib-level-chip" data-level="85.8" style="color:#9955ff;">★ 85.8%</div>
           </div>
         </div>
       </div>
@@ -724,20 +752,22 @@
   updateClock();
 
   // ═══════════════════════════════════════════════════════════════
-  // S949 OSCILLATOR  -  CANVAS ANIMATION
+  // S949 OSCILLATOR  -  CANVAS ANIMATION + FIB + DIVERGENCE
   // ═══════════════════════════════════════════════════════════════
   const canvas = document.getElementById('oscillatorCanvas');
   const ctx = canvas.getContext('2d');
   let oscData = [];
-  let oscIdx = 0;
   let oscFrame = 0;
+
+  // Simulated price data (loosely correlated with oscillator)
+  let priceData = [];
+  let priceBase = 19800;
 
   function generateOscillatorHistory(count) {
     const data = [];
     let v = 0;
     for (let i = 0; i < count; i++) {
       const t = i * 0.07;
-      // Primary cycle + secondary cycle + noise
       v = Math.sin(t) * 22 + Math.sin(t * 1.7 + 1.2) * 12 + Math.sin(t * 0.4) * 6;
       v += (Math.random() - 0.5) * 3;
       v = Math.max(-40, Math.min(40, v));
@@ -746,10 +776,23 @@
     return data;
   }
 
-  // Generate initial data
-  oscData = generateOscillatorHistory(250);
+  function generatePriceHistory(oscArr) {
+    // Simulated price loosely anti-correlated with oscillator for demo divergence
+    const prices = [];
+    let p = priceBase;
+    for (let i = 0; i < oscArr.length; i++) {
+      const osc = oscArr[i];
+      const drift = (osc / 40) * 0.8 + (Math.random() - 0.5) * 0.3;
+      p += drift;
+      prices.push(parseFloat(p.toFixed(2)));
+    }
+    return prices;
+  }
 
-  // Markers: BUY/SELL at local extremes
+  oscData = generateOscillatorHistory(250);
+  priceData = generatePriceHistory(oscData);
+
+  // Find swing markers
   function findMarkers(data) {
     const markers = [];
     const window = 8;
@@ -760,13 +803,74 @@
         if (data[j] < data[i]) isMin = false;
         if (data[j] > data[i]) isMax = false;
       }
-      if (isMax && data[i] > 12) markers.push({ idx: i, type: 'SELL', val: data[i] });
-      if (isMin && data[i] < -10) markers.push({ idx: i, type: 'BUY', val: data[i] });
+      if (isMax && data[i] > 8) markers.push({ idx: i, type: 'SELL', val: data[i] });
+      if (isMin && data[i] < -8) markers.push({ idx: i, type: 'BUY', val: data[i] });
     }
     return markers;
   }
 
   let markers = findMarkers(oscData);
+
+  // Find last two consecutive markers of same type for divergence lines
+  function findDivergencePairs(markers, priceArr, oscArr) {
+    const pairs = [];
+    const buys = markers.filter(m => m.type === 'BUY').slice(-3);
+    const sells = markers.filter(m => m.type === 'SELL').slice(-3);
+
+    // Check consecutive BUY pairs
+    for (let i = 0; i < buys.length - 1; i++) {
+      const a = buys[i], b = buys[i + 1];
+      const pA = priceArr[Math.min(a.idx, priceArr.length - 1)];
+      const pB = priceArr[Math.min(b.idx, priceArr.length - 1)];
+      const oscSlope = b.val - a.val; // osc direction (positive = osc higher low)
+      const priceSlope = pB - pA;     // price direction (positive = price higher low)
+      // Divergence = opposite slopes
+      if (Math.sign(oscSlope) !== Math.sign(priceSlope)) {
+        // Determine T1 vs T2
+        // If price making higher low (uptrend context) and osc lower low => Type 2 BUY
+        // If price making lower low (downtrend) and osc higher low => Type 1 BUY
+        const type = priceSlope > 0 ? 'TYPE 2' : 'TYPE 1';
+        const dir = 'BUY';
+        pairs.push({ a, b, type, dir, oscSlope, priceSlope });
+      }
+    }
+
+    // Check consecutive SELL pairs
+    for (let i = 0; i < sells.length - 1; i++) {
+      const a = sells[i], b = sells[i + 1];
+      const pA = priceArr[Math.min(a.idx, priceArr.length - 1)];
+      const pB = priceArr[Math.min(b.idx, priceArr.length - 1)];
+      const oscSlope = b.val - a.val;
+      const priceSlope = pB - pA;
+      if (Math.sign(oscSlope) !== Math.sign(priceSlope)) {
+        const type = priceSlope < 0 ? 'TYPE 2' : 'TYPE 1';
+        const dir = 'SELL';
+        pairs.push({ a, b, type, dir, oscSlope, priceSlope });
+      }
+    }
+
+    return pairs;
+  }
+
+  // Compute Fibonacci levels from recent oscillator swing
+  function computeFibLevels(data) {
+    const recent = data.slice(-80);
+    const high = Math.max(...recent);
+    const low = Math.min(...recent);
+    const range = high - low;
+    if (range < 2) return null;
+    const current = data[data.length - 1];
+    const fromHigh = current < (high + low) / 2; // retracing from high
+    const base = fromHigh ? high : low;
+    const end = fromHigh ? low : high;
+    const levels = [0.286, 0.429, 0.500, 0.573, 0.858];
+    return levels.map(pct => ({
+      pct,
+      val: base - (base - end) * pct * (fromHigh ? 1 : -1),
+      label: `${(pct * 100).toFixed(1)}%`,
+      isSniper: pct === 0.858
+    }));
+  }
 
   function resizeCanvas() {
     const wrap = canvas.parentElement;
@@ -777,7 +881,7 @@
   function drawOscillator() {
     resizeCanvas();
     const w = canvas.width, h = canvas.height;
-    const pad = { top: 8, right: 8, bottom: 20, left: 36 };
+    const pad = { top: 8, right: 42, bottom: 20, left: 36 };
     const plotW = w - pad.left - pad.right;
     const plotH = h - pad.top - pad.bottom;
     const visiblePoints = Math.floor(plotW / 3);
@@ -785,14 +889,12 @@
     const visible = oscData.slice(startIdx);
     const markerOffset = startIdx;
 
-    // Background
     ctx.fillStyle = '#0c0c12';
     ctx.fillRect(0, 0, w, h);
 
-    // ── Scale helper ──
     const scaleY = v => pad.top + plotH * (1 - (v + 40) / 80);
 
-    // Gridlines at ±40, ±20, 0
+    // Gridlines
     const gridLevels = [40, 20, 0, -20, -40];
     gridLevels.forEach(level => {
       const y = scaleY(level);
@@ -811,15 +913,64 @@
       ctx.lineTo(w - pad.right, y);
       ctx.stroke();
       ctx.restore();
-
-      // Label
       ctx.fillStyle = level === 0 ? '#c41e3a' : '#2a2d35';
       ctx.font = '9px IBM Plex Mono, monospace';
       ctx.textAlign = 'right';
       ctx.fillText(level > 0 ? '+' + level : level, pad.left - 4, y + 3);
     });
 
-    // ── Draw oscillator line (segments colored green/red by direction) ──
+    // ── FIBONACCI LINES ──
+    const fibLevels = computeFibLevels(oscData);
+    const currentVal = visible[visible.length - 1];
+    let nearestFib = null, nearestDist = Infinity;
+    if (fibLevels) {
+      fibLevels.forEach(fib => {
+        const y = scaleY(fib.val);
+        if (y < pad.top || y > h - pad.bottom) return;
+        const dist = Math.abs(currentVal - fib.val);
+        if (dist < nearestDist) { nearestDist = dist; nearestFib = fib; }
+
+        ctx.save();
+        const isNearest = nearestFib === fib; // will update below
+        ctx.setLineDash([3, 5]);
+        ctx.strokeStyle = fib.isSniper ? 'rgba(153,85,255,0.6)' : 'rgba(68,136,255,0.5)';
+        ctx.lineWidth = fib.isSniper ? 1.2 : 0.8;
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(w - pad.right + 36, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = fib.isSniper ? '#9955ff' : '#4488ff';
+        ctx.font = 'bold 8px IBM Plex Mono, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(fib.isSniper ? '★' + fib.label : fib.label, w - pad.right + 2, y + 3);
+        ctx.restore();
+      });
+
+      // Re-draw nearest with glow
+      if (nearestFib && nearestDist < 6) {
+        const y = scaleY(nearestFib.val);
+        ctx.save();
+        ctx.setLineDash([]);
+        ctx.strokeStyle = nearestFib.isSniper ? 'rgba(153,85,255,0.9)' : 'rgba(68,136,255,0.9)';
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = nearestFib.isSniper ? '#9955ff' : '#4488ff';
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(w - pad.right, y);
+        ctx.stroke();
+        ctx.restore();
+        // Update chip UI
+        document.querySelectorAll('.fib-level-chip').forEach(el => {
+          el.classList.toggle('active', parseFloat(el.dataset.level).toFixed(1) === (nearestFib.pct * 100).toFixed(1));
+        });
+      } else {
+        document.querySelectorAll('.fib-level-chip').forEach(el => el.classList.remove('active'));
+      }
+    }
+
+    // ── OSCILLATOR LINE (green above zero, red below zero) ──
     if (visible.length < 2) return;
     for (let i = 1; i < visible.length; i++) {
       const x0 = pad.left + (i - 1) * (plotW / (visiblePoints - 1));
@@ -836,6 +987,51 @@
       ctx.stroke();
     }
 
+    // ── DIVERGENCE PAIRS — slope lines + T1/T2 labels ──
+    const pairs = findDivergencePairs(markers, priceData, oscData);
+    pairs.slice(-2).forEach(pair => {
+      const relA = pair.a.idx - markerOffset;
+      const relB = pair.b.idx - markerOffset;
+      if (relA < 0 || relB < 0 || relA >= visible.length || relB >= visible.length) return;
+      const xA = pad.left + relA * (plotW / (visiblePoints - 1));
+      const xB = pad.left + relB * (plotW / (visiblePoints - 1));
+      const yA = scaleY(pair.a.val);
+      const yB = scaleY(pair.b.val);
+      const isT2 = pair.type === 'TYPE 2';
+      const lineColor = isT2 ? 'rgba(0,230,118,0.7)' : 'rgba(255,171,0,0.7)';
+
+      // Slope line on oscillator
+      ctx.save();
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(xA, yA);
+      ctx.lineTo(xB, yB);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Dot at each swing point
+      ctx.fillStyle = lineColor;
+      ctx.beginPath(); ctx.arc(xA, yA, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(xB, yB, 3, 0, Math.PI * 2); ctx.fill();
+
+      // Label near second point
+      const labelX = Math.min(xB + 4, w - pad.right - 30);
+      const labelY = pair.dir === 'BUY' ? yB + 18 : yB - 8;
+      ctx.fillStyle = isT2 ? '#00e676' : '#ffab00';
+      ctx.font = 'bold 8px IBM Plex Mono, monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(pair.type, labelX, labelY);
+      ctx.font = '7px IBM Plex Mono, monospace';
+      ctx.fillText(pair.dir, labelX, labelY + 9);
+      ctx.restore();
+
+      // Update signal chip
+      document.getElementById('oscSignal').textContent = pair.type;
+      document.getElementById('oscSignal').className = 'osc-reading-val ' + (isT2 ? 'val-green' : 'val-gold');
+    });
+
     // ── BUY/SELL markers ──
     markers.forEach(m => {
       const relIdx = m.idx - markerOffset;
@@ -845,26 +1041,25 @@
       if (m.type === 'BUY') {
         ctx.fillStyle = '#00e676';
         ctx.beginPath();
-        ctx.moveTo(x, y + 12); ctx.lineTo(x - 4, y + 6); ctx.lineTo(x + 4, y + 6);
+        ctx.moveTo(x, y + 10); ctx.lineTo(x - 4, y + 5); ctx.lineTo(x + 4, y + 5);
         ctx.fill();
         ctx.font = '7px IBM Plex Mono, monospace';
         ctx.fillStyle = '#00e676';
         ctx.textAlign = 'center';
-        ctx.fillText('BUY', x, y + 20);
+        ctx.fillText('BUY', x, y + 18);
       } else {
         ctx.fillStyle = '#ff1744';
         ctx.beginPath();
-        ctx.moveTo(x, y - 12); ctx.lineTo(x - 4, y - 6); ctx.lineTo(x + 4, y - 6);
+        ctx.moveTo(x, y - 10); ctx.lineTo(x - 4, y - 5); ctx.lineTo(x + 4, y - 5);
         ctx.fill();
         ctx.font = '7px IBM Plex Mono, monospace';
         ctx.fillStyle = '#ff1744';
         ctx.textAlign = 'center';
-        ctx.fillText('SELL', x, y - 15);
+        ctx.fillText('SELL', x, y - 13);
       }
     });
 
     // ── Current value line ──
-    const currentVal = visible[visible.length - 1];
     const yNow = scaleY(currentVal);
     ctx.save();
     ctx.setLineDash([3, 4]);
@@ -875,31 +1070,33 @@
     ctx.lineTo(w - pad.right, yNow);
     ctx.stroke();
     ctx.restore();
-
-    // Current val label
     ctx.fillStyle = '#f5a623';
     ctx.font = 'bold 9px IBM Plex Mono, monospace';
     ctx.textAlign = 'left';
     ctx.fillText((currentVal > 0 ? '+' : '') + currentVal.toFixed(1), w - pad.right + 1, yNow + 3);
   }
 
-  // Animate: add new data point every 1.5s
   function tickOscillator() {
     const last = oscData[oscData.length - 1];
+    const lastPrice = priceData[priceData.length - 1];
     const t = oscData.length * 0.07;
     let next = Math.sin(t) * 22 + Math.sin(t * 1.7 + 1.2) * 12 + Math.sin(t * 0.4) * 6;
     next += (Math.random() - 0.5) * 3;
     next = Math.max(-40, Math.min(40, next));
     oscData.push(parseFloat(next.toFixed(2)));
-    if (oscData.length > 400) oscData.shift();
+
+    // Evolve price (loosely follows oscillator with some independence)
+    const priceDrift = (next / 40) * 0.6 + (Math.random() - 0.5) * 0.4;
+    priceData.push(parseFloat((lastPrice + priceDrift).toFixed(2)));
+
+    if (oscData.length > 400) { oscData.shift(); priceData.shift(); }
     markers = findMarkers(oscData);
 
-    // Update reading UI
     const trend = next > last ? 'BULL' : 'BEAR';
     const trendSymbol = next > last ? '↑' : '↓';
     const trendClass = next > last ? 'val-green' : 'val-red';
     document.getElementById('oscCurrent').textContent = (next > 0 ? '+' : '') + next.toFixed(1);
-    document.getElementById('oscCurrent').className = 'osc-reading-val ' + trendClass;
+    document.getElementById('oscCurrent').className = 'osc-reading-val ' + (next >= 0 ? 'val-green' : 'val-red');
     document.getElementById('oscTrend').textContent = trendSymbol + ' ' + trend;
     document.getElementById('oscTrend').className = 'osc-reading-val ' + trendClass;
   }
@@ -911,6 +1108,126 @@
   }
   setInterval(tickOscillator, 1500);
   animOscillator();
+
+  // ═══════════════════════════════════════════════════════════════
+  // DIVERGENCE OVERLAY CANVAS (on top of TradingView chart)
+  // ═══════════════════════════════════════════════════════════════
+  const divCanvas = document.getElementById('divergenceOverlay');
+  const divCtx = divCanvas.getContext('2d');
+  let divFrame = 0;
+  let divAnnotations = [];
+
+  function resizeDivCanvas() {
+    const container = divCanvas.parentElement;
+    divCanvas.width = container.clientWidth;
+    divCanvas.height = container.clientHeight;
+  }
+
+  function generateDivAnnotations() {
+    // Create 2 demo divergence annotations at plausible positions
+    const w = divCanvas.width, h = divCanvas.height;
+    divAnnotations = [
+      {
+        type: 'TYPE 2', dir: 'BUY',
+        // Price: higher low (upward slope)
+        pxA: { x: w * 0.28, y: h * 0.72 },
+        pxB: { x: w * 0.54, y: h * 0.62 },
+        // Osc reference (not drawn here, in oscillator canvas)
+        color: '#00e676', alpha: 0,
+        fadeIn: true, holdFrames: 180, age: 0
+      },
+      {
+        type: 'TYPE 1', dir: 'SELL',
+        pxA: { x: w * 0.60, y: h * 0.32 },
+        pxB: { x: w * 0.82, y: h * 0.28 },
+        color: '#ffab00', alpha: 0,
+        fadeIn: true, holdFrames: 220, age: 0
+      }
+    ];
+  }
+
+  function drawDivergenceOverlay() {
+    resizeDivCanvas();
+    divCtx.clearRect(0, 0, divCanvas.width, divCanvas.height);
+    divFrame++;
+
+    if (divAnnotations.length === 0 || divFrame % 600 === 0) {
+      generateDivAnnotations();
+    }
+
+    divAnnotations.forEach(ann => {
+      ann.age++;
+      // Fade in over 40 frames, hold, fade out
+      if (ann.age < 40) ann.alpha = ann.age / 40;
+      else if (ann.age < ann.holdFrames) ann.alpha = 1;
+      else ann.alpha = Math.max(0, 1 - (ann.age - ann.holdFrames) / 40);
+
+      if (ann.alpha <= 0) return;
+
+      const alpha = ann.alpha * 0.85;
+      divCtx.save();
+      divCtx.globalAlpha = alpha;
+
+      // Draw slope line between the two price swing points
+      divCtx.strokeStyle = ann.color;
+      divCtx.lineWidth = 1.5;
+      divCtx.setLineDash([5, 4]);
+      divCtx.beginPath();
+      divCtx.moveTo(ann.pxA.x, ann.pxA.y);
+      divCtx.lineTo(ann.pxB.x, ann.pxB.y);
+      divCtx.stroke();
+      divCtx.setLineDash([]);
+
+      // Dots at swing points
+      divCtx.fillStyle = ann.color;
+      [ann.pxA, ann.pxB].forEach(pt => {
+        divCtx.beginPath();
+        divCtx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+        divCtx.fill();
+      });
+
+      // Arrow at pxB
+      const dx = ann.pxB.x - ann.pxA.x, dy = ann.pxB.y - ann.pxA.y;
+      const angle = Math.atan2(dy, dx);
+      divCtx.save();
+      divCtx.translate(ann.pxB.x, ann.pxB.y);
+      divCtx.rotate(angle);
+      divCtx.fillStyle = ann.color;
+      divCtx.beginPath();
+      divCtx.moveTo(8, 0); divCtx.lineTo(0, -4); divCtx.lineTo(0, 4);
+      divCtx.fill();
+      divCtx.restore();
+
+      // Label badge
+      const lx = ann.pxB.x + 14, ly = ann.pxB.y - 6;
+      divCtx.fillStyle = 'rgba(5,5,7,0.75)';
+      divCtx.fillRect(lx - 2, ly - 10, 54, 24);
+      divCtx.strokeStyle = ann.color;
+      divCtx.lineWidth = 0.8;
+      divCtx.strokeRect(lx - 2, ly - 10, 54, 24);
+      divCtx.fillStyle = ann.color;
+      divCtx.font = 'bold 9px JetBrains Mono, monospace';
+      divCtx.fillText(ann.type, lx, ly);
+      divCtx.font = '8px JetBrains Mono, monospace';
+      divCtx.fillText(ann.dir + ' SETUP', lx, ly + 11);
+
+      divCtx.restore();
+    });
+
+    requestAnimationFrame(drawDivergenceOverlay);
+  }
+
+  // Start overlay after a short delay (let TradingView load first)
+  setTimeout(() => {
+    resizeDivCanvas();
+    generateDivAnnotations();
+    drawDivergenceOverlay();
+  }, 3000);
+
+  window.addEventListener('resize', () => {
+    resizeDivCanvas();
+    generateDivAnnotations();
+  });
 
   // ═══════════════════════════════════════════════════════════════
   // TICKSTRIKE SIMULATION
