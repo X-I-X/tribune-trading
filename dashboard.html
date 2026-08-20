@@ -535,7 +535,7 @@
     <div class="panel panel-oscillator">
       <div class="panel-header">
         <span class="panel-title">S949 MOMENTUM OSCILLATOR</span>
-        <span class="panel-badge badge-sim">SIM DATA</span>
+        <span class="panel-badge badge-sim" id="oscBadge">SIM DATA</span>
       </div>
       <div class="osc-body">
         <div class="osc-canvas-wrap">
@@ -771,8 +771,7 @@
   // ── Market data fetch (QQQ 5-min via Yahoo Finance) ──────────────────────
   async function fetchMarketData() {
     try {
-      const url = 'https://query1.finance.yahoo.com/v8/finance/chart/QQQ?interval=5m&range=1d&includePrePost=false&corsDomain=finance.yahoo.com';
-      const resp = await fetch(url, { cache: 'no-store' });
+      const resp = await fetch('/.netlify/functions/market-data', { cache: 'no-store' });
       if (!resp.ok) throw new Error('fetch failed');
       const data = await resp.json();
       const result = data.chart.result[0];
@@ -805,10 +804,12 @@
       marketIsLive = true;
       lastFetchTs = Date.now();
       updateNavStatus('LIVE');
+      updateOscBadge();
     } catch (e) {
       // Fallback to simulation if fetch fails (market closed / CORS)
       if (oscData.length === 0) initSimulation();
       updateNavStatus('SIM');
+      updateOscBadge();
     }
   }
 
@@ -1096,6 +1097,19 @@
     ctx.fillStyle = marketIsLive ? 'rgba(0,230,118,0.6)' : 'rgba(255,171,0,0.5)';
     ctx.font = '7px IBM Plex Mono, monospace'; ctx.textAlign = 'left';
     ctx.fillText(marketIsLive ? '● LIVE QQQ' : '● SIM', pad.left + 2, pad.top + 8);
+  }
+
+  // ── Oscillator badge (LIVE QQQ vs SIM DATA) ────────────────────────────────
+  function updateOscBadge() {
+    const badge = document.getElementById('oscBadge');
+    if (!badge) return;
+    if (marketIsLive) {
+      badge.textContent = 'LIVE QQQ';
+      badge.className = 'panel-badge badge-live';
+    } else {
+      badge.textContent = 'SIM DATA';
+      badge.className = 'panel-badge badge-sim';
+    }
   }
 
   // ── Oscillator UI update ─────────────────────────────────────────────────
