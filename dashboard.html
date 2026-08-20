@@ -783,16 +783,16 @@
       const highs  = q.high.map((h, i)  => h ?? closes[i]);
       const lows   = q.low.map((l, i)   => l ?? closes[i]);
 
-      // All valid bars — may span 2 days (yesterday + today) for CMO warmup
+      // All valid bars — spans 5 days for CMO warmup
       const allValid = ts.map((t, i) => ({ t, c: closes[i], h: highs[i], l: lows[i] }))
                          .filter(b => b.c > 0 && b.h > 0 && b.l > 0);
       if (allValid.length < 5) throw new Error('insufficient data');
 
-      // Compute CMO across full 2-day history so early session bars have proper warmup
-      // (CMO period=14 on 5-min bars needs 75 min of data; yesterday's closes provide that)
+      // Compute CMO across full 5-day history — yesterday provides 78+ bars of warmup.
+      // CMO(14) on 5-min bars needs 15 bars min. Spread: zeros prepended for first 14 bars.
       const allCloses = allValid.map(b => b.c);
-      const allOsc = computeCMO(allCloses, 14);
-      while (allOsc.length < allCloses.length) allOsc.unshift(0);
+      const cmoRaw = computeCMO(allCloses, 14);
+      const allOsc = [...Array(allCloses.length - cmoRaw.length).fill(0), ...cmoRaw];
 
       // Filter display to today's session only (UTC date match)
       const todayUTC = new Date().toISOString().slice(0, 10); // e.g. "2026-08-20"
@@ -805,7 +805,10 @@
       priceData     = todayPairs.map(({ b }) => b.c);
       priceHighs    = todayPairs.map(({ b }) => b.h);
       priceLows     = todayPairs.map(({ b }) => b.l);
-      oscData       = todayPairs.map(({ i }) => allOsc[i]);
+      const rawOscSlice = todayPairs.map(({ i }) => allOsc[i]);
+      // Sanity: if all-zero (warmup not effective), fall back to SIM
+      if (!rawOscSlice.some(v => Math.abs(v) > 0.01)) throw new Error('CMO flat — SIM fallback');
+      oscData = rawOscSlice;
       sessionHigh   = Math.max(...priceHighs);
       sessionLow    = Math.min(...priceLows);
       sessionOpen   = barTimestamps[0];
