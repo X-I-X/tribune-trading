@@ -1,5 +1,5 @@
 /**
- * Tribune Trader — Interactive Session Chart v2
+ * Tribune Trader  -  Interactive Session Chart v2
  * August 17, 2026 · NQ SEP26 · 5-min · Stan Smidt
  *
  * Data sources (verified, multi-pass):
@@ -33,8 +33,8 @@
       tsDir: 'green',
       state: 'CONFLICTED',
       divType: 'Type 1',
-      title: 'Early SELL — Oscillator High',
-      note: 'Price reaches ~30,265 in the early session. Oscillator at +38 — a strong reading. Both are near highs simultaneously: no divergence yet (they\'re in sync). TickStrike 10 green but dropping. CONFLICTED because the oscillator is bullish while the intraday trend is beginning to roll over. A Type 1 counter-trend signal.',
+      title: 'Early SELL  -  Oscillator High',
+      note: 'Price reaches ~30,265 in the early session. Oscillator at +38  -  a strong reading. Both are near highs simultaneously: no divergence yet (they\'re in sync). TickStrike 10 green but dropping. CONFLICTED because the oscillator is bullish while the intraday trend is beginning to roll over. A Type 1 counter-trend signal.',
       arrows: { price: 'up', osc: 'up' },
       divergence: false,
     },
@@ -49,8 +49,8 @@
       tsDir: 'red',
       state: 'CONFIRMED',
       divType: 'Type 1',
-      title: 'Session High SELL — In Sync (No Divergence)',
-      note: 'Price pushes to the session high at ~30,295. Oscillator also at its peak (+40). Both panels agree: this is a strong peak. When they are IN SYNC like this, there is no divergence — just a simultaneous extreme. The signal here comes from the price behavior (resistance at 30,314 red line), not from oscillator disagreement. TickStrike flips red at 12. CONFIRMED SELL.',
+      title: 'Session High SELL  -  In Sync (No Divergence)',
+      note: 'Price pushes to the session high at ~30,295. Oscillator also at its peak (+40). Both panels agree: this is a strong peak. When they are IN SYNC like this, there is no divergence  -  just a simultaneous extreme. The signal here comes from the price behavior (resistance at 30,314 red line), not from oscillator disagreement. TickStrike flips red at 12. CONFIRMED SELL.',
       arrows: { price: 'up', osc: 'up' },
       divergence: false,
     },
@@ -65,8 +65,8 @@
       tsDir: 'green',
       state: 'CONFIRMED',
       divType: 'Type 1',
-      title: 'Deep Trough BUY — Oscillator at -42',
-      note: 'The deepest oscillator reading of the session: -42. Price at ~30,165. This is the maximum bearish reading — momentum is at maximum exhaustion to the downside. TickStrike flips green at 11 as buyers step in. CONFIRMED. A counter-trend Type 1 setup: the downtrend is dominant but the oscillator is screaming oversold. Stan would trade this carefully given the trend direction.',
+      title: 'Deep Trough BUY  -  Oscillator at -42',
+      note: 'The deepest oscillator reading of the session: -42. Price at ~30,165. This is the maximum bearish reading  -  momentum is at maximum exhaustion to the downside. TickStrike flips green at 11 as buyers step in. CONFIRMED. A counter-trend Type 1 setup: the downtrend is dominant but the oscillator is screaming oversold. Stan would trade this carefully given the trend direction.',
       arrows: { price: 'down', osc: 'down' },
       divergence: false,
     },
@@ -81,8 +81,8 @@
       tsDir: 'red',
       state: 'NEUTRAL',
       divType: 'Type 2',
-      title: 'Lower High SELL — First Clear Bearish Divergence',
-      note: 'Price bounces to ~30,250 — a LOWER HIGH vs the 30,295 session peak. The S949 oscillator peaks at only +25 — also LOWER than the +40 at the 10:00 peak. Both are declining together (both arrows point down). This is bearish divergence confirmation: the trend is definitively established. TickStrike at 9 — NEUTRAL, not confirming sellers aggressively. Stan would note the divergence structure but wait for TickStrike to confirm.',
+      title: 'Lower High SELL  -  First Clear Bearish Divergence',
+      note: 'Price bounces to ~30,250  -  a LOWER HIGH vs the 30,295 session peak. The S949 oscillator peaks at only +25  -  also LOWER than the +40 at the 10:00 peak. Both are declining together (both arrows point down). This is bearish divergence confirmation: the trend is definitively established. TickStrike at 9  -  NEUTRAL, not confirming sellers aggressively. Stan would note the divergence structure but wait for TickStrike to confirm.',
       arrows: { price: 'down', osc: 'down' },
       divergence: true,
       divergenceType: 'bearish',
@@ -98,8 +98,8 @@
       tsDir: 'green',
       state: 'NEUTRAL',
       divType: 'Type 2',
-      title: 'THE STRONGEST DIVERGENCE — Price Down, Oscillator +42',
-      note: 'The most dramatic signal on the full day\'s chart. Price is at 30,140 — a LOWER HIGH vs 30,250 (12:00) and 30,295 (10:00). The downtrend is clear. But the S949 oscillator SPIKES to +42 — the HIGHEST reading of the entire session. The arrows in both panels point in COMPLETELY OPPOSITE DIRECTIONS. Price arrow: down. Oscillator arrow: sharply up. This is what Stan calls the "rocket out of fuel" analogy in reverse: price is falling, but momentum (measured by the oscillator) is building dramatically upward. Stan\'s words: "That\'s actually a gann swing... the oscillator tells me more than anything." TickStrike at 8 (probing only) — NEUTRAL state prevents a full CONFIRMED signal here.',
+      title: 'THE STRONGEST DIVERGENCE  -  Price Down, Oscillator +42',
+      note: 'The most dramatic signal on the full day\'s chart. Price is at 30,140  -  a LOWER HIGH vs 30,250 (12:00) and 30,295 (10:00). The downtrend is clear. But the S949 oscillator SPIKES to +42  -  the HIGHEST reading of the entire session. The arrows in both panels point in COMPLETELY OPPOSITE DIRECTIONS. Price arrow: down. Oscillator arrow: sharply up. This is what Stan calls the "rocket out of fuel" analogy in reverse: price is falling, but momentum (measured by the oscillator) is building dramatically upward. Stan\'s words: "That\'s actually a gann swing... the oscillator tells me more than anything." TickStrike at 8 (probing only)  -  NEUTRAL state prevents a full CONFIRMED signal here.',
       arrows: { price: 'down', osc: 'up_max' },
       divergence: true,
       divergenceType: 'bearish_dramatic',
@@ -116,8 +116,8 @@
       tsDir: 'green',
       state: 'CONFIRMED',
       divType: 'Type 2',
-      title: 'Rising Trough BUY — Bullish Divergence in Downtrend',
-      note: 'Price drops to the session low at ~30,075. The oscillator trough is at -25 — significantly HIGHER (less negative) than the -42 reading at 11:15. Price making a lower low while oscillator makes a HIGHER trough: classic bullish divergence. "Compare lows in a downtrend." The downward momentum is weakening. TickStrike confirms at 12 green (buyers active). CONFIRMED. Session P&L: $1,155 (+42 ticks on 1 NQ contract from these precise entries).',
+      title: 'Rising Trough BUY  -  Bullish Divergence in Downtrend',
+      note: 'Price drops to the session low at ~30,075. The oscillator trough is at -25  -  significantly HIGHER (less negative) than the -42 reading at 11:15. Price making a lower low while oscillator makes a HIGHER trough: classic bullish divergence. "Compare lows in a downtrend." The downward momentum is weakening. TickStrike confirms at 12 green (buyers active). CONFIRMED. Session P&L: $1,155 (+42 ticks on 1 NQ contract from these precise entries).',
       arrows: { price: 'down', osc: 'up' },
       divergence: true,
       divergenceType: 'bullish',
@@ -153,7 +153,7 @@
     [83,  30115], [86,  30080], [90,  30066], // close near lows
   ];
 
-  // Oscillator path — verified peaks/troughs from image analysis
+  // Oscillator path  -  verified peaks/troughs from image analysis
   // Peak +42 at ~13:50 (bar 68) is the dramatic moment
   // Trough -42 at ~11:15 (bar 40) is the deepest
   const OSC_CURVE = [
@@ -261,7 +261,7 @@
     const viewW = W + PAD.left;
     const viewH = H_TOTAL + PAD.top + PAD.bottom;
 
-    // RTH session background (cyan equivalent — light teal tint)
+    // RTH session background (cyan equivalent  -  light teal tint)
     const pitOpenX = px(27).toFixed(1);
     const pitCloseX = px(83).toFixed(1);
     const rthBg = `<rect x="${pitOpenX}" y="${PAD.top}" width="${(parseFloat(pitCloseX) - parseFloat(pitOpenX)).toFixed(1)}" height="${H_TOTAL}" fill="rgba(0,180,200,0.04)" rx="0"/>`;
@@ -314,7 +314,7 @@
 
     // Panel labels
     const panelLabels = `
-      <text x="${PAD.left + 4}" y="${PAD.top + 11}" fill="#0A0B12" font-size="8" font-family="JetBrains Mono,monospace" font-weight="500" opacity=".4">PRICE PANEL — NQ SEP26 · 5-MIN · 2026-08-17 · NinjaTrader</text>
+      <text x="${PAD.left + 4}" y="${PAD.top + 11}" fill="#0A0B12" font-size="8" font-family="JetBrains Mono,monospace" font-weight="500" opacity=".4">PRICE PANEL  -  NQ SEP26 · 5-MIN · 2026-08-17 · NinjaTrader</text>
       <text x="${PAD.left + 4}" y="${(H_PRICE + GAP + PAD.top + 11).toFixed(1)}" fill="#0A0B12" font-size="8" font-family="JetBrains Mono,monospace" font-weight="500" opacity=".4">S949 OSCILLATOR (Rob Mitchell) · ±42 SCALE · ZERO LINE (RED DASH)</text>`;
 
     // Highlight zone for strongest divergence (bar 65-70)
@@ -356,13 +356,13 @@
   <!-- Divergence connectors (vertical dashed lines) -->
   ${connectors}
 
-  <!-- Signal markers — price panel -->
+  <!-- Signal markers  -  price panel -->
   ${priceMarks}
 
   <!-- Oscillator colored segments -->
   ${oscLines}
 
-  <!-- Signal markers — oscillator panel -->
+  <!-- Signal markers  -  oscillator panel -->
   ${oscMarks}
 
   <!-- Volume profile -->
@@ -447,13 +447,13 @@
   // ── Image 1 extras section ─────────────────────────────────────────────────
   const img1Extras = `
 <div style="margin-top:40px;background:#EFEBE2;border:1px solid rgba(10,11,18,.12);border-radius:12px;padding:28px 32px;">
-  <div class="eyebrow" style="margin-bottom:14px;">Chart 1 vs Chart 2 — What the Additional Overlays Mean</div>
+  <div class="eyebrow" style="margin-bottom:14px;">Chart 1 vs Chart 2  -  What the Additional Overlays Mean</div>
   <p style="font-size:14px;color:#8C8896;max-width:64ch;margin-bottom:24px;">
     Both screenshots show the same 8/17/2026 session. Chart 1 (captured at 16:30) has additional indicator overlays not visible in Chart 2 (16:55 clean version). These overlays are standard elements of Stan's full NinjaTrader setup.
   </p>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
     <div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7A1A5C;text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px;font-weight:600;">Chart 1 Only — Additional Elements</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7A1A5C;text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px;font-weight:600;">Chart 1 Only  -  Additional Elements</div>
       <div style="display:flex;flex-direction:column;gap:0;border:1px solid rgba(10,11,18,.12);border-radius:8px;overflow:hidden;">
         <div style="padding:12px 16px;background:#fff;border-bottom:1px solid rgba(10,11,18,.08);">
           <div style="font-size:13px;font-weight:600;color:#0A0B12;margin-bottom:4px;">Pink / Cyan Background Zones</div>
@@ -461,28 +461,28 @@
         </div>
         <div style="padding:12px 16px;background:#fff;border-bottom:1px solid rgba(10,11,18,.08);">
           <div style="font-size:13px;font-weight:600;color:#0A0B12;margin-bottom:4px;">Break Labels (Red and Blue Triangles)</div>
-          <div style="font-size:13px;color:#8C8896;line-height:1.6;"><span style="color:#3b82f6;font-weight:600;">Blue up-triangle Break</span> = price broke upward through a prior swing level (structural resistance cleared). <span style="color:#ef4444;font-weight:600;">Red down-triangle Break</span> = price broke below a prior swing level (support failed). These are automated breakout labels from Stan's NinjaTrader indicator suite — they mark when price definitively crosses a structural pivot.</div>
+          <div style="font-size:13px;color:#8C8896;line-height:1.6;"><span style="color:#3b82f6;font-weight:600;">Blue up-triangle Break</span> = price broke upward through a prior swing level (structural resistance cleared). <span style="color:#ef4444;font-weight:600;">Red down-triangle Break</span> = price broke below a prior swing level (support failed). These are automated breakout labels from Stan's NinjaTrader indicator suite  -  they mark when price definitively crosses a structural pivot.</div>
         </div>
         <div style="padding:12px 16px;background:#fff;">
           <div style="font-size:13px;font-weight:600;color:#0A0B12;margin-bottom:4px;">Colored Horizontal S/R Lines</div>
-          <div style="font-size:13px;color:#8C8896;line-height:1.6;">Short horizontal segments in green (prior lows = support), red (prior highs = resistance), blue and gray (neutral pivots). The <span style="font-weight:600;">stepped red descending line</span> on the right traces the sequence of lower highs — a visual trailing resistance staircase. The <span style="font-weight:600;">red horizontal line at 30,314</span> marks the key resistance level from the prior session.</div>
+          <div style="font-size:13px;color:#8C8896;line-height:1.6;">Short horizontal segments in green (prior lows = support), red (prior highs = resistance), blue and gray (neutral pivots). The <span style="font-weight:600;">stepped red descending line</span> on the right traces the sequence of lower highs  -  a visual trailing resistance staircase. The <span style="font-weight:600;">red horizontal line at 30,314</span> marks the key resistance level from the prior session.</div>
         </div>
       </div>
     </div>
     <div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7A1A5C;text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px;font-weight:600;">dProfile — Volume at Price</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#7A1A5C;text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px;font-weight:600;">dProfile  -  Volume at Price</div>
       <div style="border:1px solid rgba(10,11,18,.12);border-radius:8px;overflow:hidden;background:#fff;">
         <div style="padding:12px 16px;border-bottom:1px solid rgba(10,11,18,.08);">
           <div style="font-size:13px;font-weight:600;color:#0A0B12;margin-bottom:4px;">What It Shows</div>
-          <div style="font-size:13px;color:#8C8896;line-height:1.6;">The gray histogram on the right side of Chart 1 is the volume profile (labeled "dProfile" in Stan's setup). Each horizontal bar shows how much trading volume occurred at that price level during the session. Longer bar = more activity. The widest bar is the Point of Control (POC) — the price with the highest volume of the day.</div>
+          <div style="font-size:13px;color:#8C8896;line-height:1.6;">The gray histogram on the right side of Chart 1 is the volume profile (labeled "dProfile" in Stan's setup). Each horizontal bar shows how much trading volume occurred at that price level during the session. Longer bar = more activity. The widest bar is the Point of Control (POC)  -  the price with the highest volume of the day.</div>
         </div>
         <div style="padding:12px 16px;border-bottom:1px solid rgba(10,11,18,.08);">
           <div style="font-size:13px;font-weight:600;color:#0A0B12;margin-bottom:4px;">POC Cluster: 30,100 - 30,130</div>
-          <div style="font-size:13px;color:#8C8896;line-height:1.6;">The heaviest volume on 8/17 concentrated in the <span style="font-weight:600;color:#7A1A5C;">30,100-30,130 zone</span>. This is "fair value" for the day — where buyers and sellers agreed the most. Secondary cluster near 30,210-30,240. Thin volume at the session high (~30,314) confirms low participation there (rejection, not acceptance).</div>
+          <div style="font-size:13px;color:#8C8896;line-height:1.6;">The heaviest volume on 8/17 concentrated in the <span style="font-weight:600;color:#7A1A5C;">30,100-30,130 zone</span>. This is "fair value" for the day  -  where buyers and sellers agreed the most. Secondary cluster near 30,210-30,240. Thin volume at the session high (~30,314) confirms low participation there (rejection, not acceptance).</div>
         </div>
         <div style="padding:12px 16px;">
           <div style="font-size:13px;font-weight:600;color:#0A0B12;margin-bottom:4px;">Why It Matters for Signal Timing</div>
-          <div style="font-size:13px;color:#8C8896;line-height:1.6;">The POC at 30,100-30,130 acted as a magnet for price during the afternoon session. BUY signals near 30,075-30,085 were just below the POC — a natural level where buyers cluster. The volume profile adds a third layer of confluence to the oscillator signal + TickStrike confirmation framework.</div>
+          <div style="font-size:13px;color:#8C8896;line-height:1.6;">The POC at 30,100-30,130 acted as a magnet for price during the afternoon session. BUY signals near 30,075-30,085 were just below the POC  -  a natural level where buyers cluster. The volume profile adds a third layer of confluence to the oscillator signal + TickStrike confirmation framework.</div>
         </div>
       </div>
     </div>
@@ -499,7 +499,7 @@
   <h3 style="font-family:'Archivo',sans-serif;font-size:26px;font-weight:700;color:#0A0B12;line-height:1.15;margin-bottom:10px;">August 17, 2026 · NQ SEP26 · Stan Smidt</h3>
   <p style="font-size:15px;color:#8C8896;max-width:64ch;margin-bottom:8px;">
     The price chart alone does not reveal the signal. The oscillator alone does not show price context.
-    Divergence — when both panels disagree — is where Stan acts.
+    Divergence  -  when both panels disagree  -  is where Stan acts.
     Below: the 8/17/2026 session reconstructed from HAL vision analysis of both NinjaTrader screenshots.
   </p>
   <p style="font-size:13.5px;color:#8C8896;max-width:64ch;margin-bottom:24px;">
@@ -523,13 +523,13 @@
     </div>
     ${buildSVG()}
     <p style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8C8896;margin-top:8px;text-align:center;padding:0 8px;letter-spacing:.05em;">
-      Reconstructed from HAL vision analysis of Stan's NinjaTrader screenshots (proprietary — not reproduced directly). Educational illustration. Right: simplified volume profile (POC = 30,100-30,130).
+      Reconstructed from HAL vision analysis of Stan's NinjaTrader screenshots (proprietary  -  not reproduced directly). Educational illustration. Right: simplified volume profile (POC = 30,100-30,130).
     </p>
   </div>
 
   <!-- Signal cards -->
   <div style="margin-bottom:8px;">
-    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:#8C8896;text-transform:uppercase;letter-spacing:.14em;margin-bottom:14px;">Key Divergence Signals — Click to highlight on chart</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:#8C8896;text-transform:uppercase;letter-spacing:.14em;margin-bottom:14px;">Key Divergence Signals  -  Click to highlight on chart</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" id="sig-cards">
       ${cards}
     </div>
@@ -537,17 +537,17 @@
 
   <!-- Stan's rule block -->
   <div style="background:#0A0B12;border-radius:12px;padding:28px 32px;margin-top:20px;">
-    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(239,235,226,.4);text-transform:uppercase;letter-spacing:.18em;margin-bottom:12px;">Stan's Rule — Verbatim</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(239,235,226,.4);text-transform:uppercase;letter-spacing:.18em;margin-bottom:12px;">Stan's Rule  -  Verbatim</div>
     <p style="font-family:'Archivo',sans-serif;font-size:18px;font-weight:600;color:#EFEBE2;line-height:1.5;margin:0 0 20px;">
       "That's the place you want to buy right there because you got the divergence. Type two is always with the trend."
     </p>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;" id="rules-grid">
       <div style="border-left:3px solid #7A1A5C;padding-left:14px;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(239,235,226,.4);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;">In an uptrend — compare lows</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(239,235,226,.4);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;">In an uptrend  -  compare lows</div>
         <div style="font-family:'Inter',sans-serif;font-size:13px;color:#EFEBE2;line-height:1.65;">Price makes a higher low. Oscillator makes a lower low. Selling pressure is weakening at the pullback. Type 2 BUY at the close of the signal candle. Target: prior swing high.</div>
       </div>
       <div style="border-left:3px solid #7A1A5C;padding-left:14px;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(239,235,226,.4);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;">In a downtrend — compare highs</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(239,235,226,.4);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;">In a downtrend  -  compare highs</div>
         <div style="font-family:'Inter',sans-serif;font-size:13px;color:#EFEBE2;line-height:1.65;">Price makes a lower high. Oscillator peaks higher. Buying pressure is weakening at the bounce. Type 2 SELL. On 8/17: price 30,295 then 30,250 then 30,140 (lower highs) while oscillator peaked at +40, +25, then spiked to +42.</div>
       </div>
       <div style="border-left:3px solid #C6A35A;padding-left:14px;">
