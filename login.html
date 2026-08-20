@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Tribune Trader — Access</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%; background: #050507;
+      font-family: 'JetBrains Mono', monospace;
+      display: flex; align-items: center; justify-content: center;
+      color: #d8dae0;
+    }
+    .gate {
+      width: 100%; max-width: 360px;
+      padding: 0 1.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 2rem;
+    }
+    .logo {
+      display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+    }
+    .logo-brand {
+      font-family: 'Archivo', sans-serif;
+      font-size: 1rem; font-weight: 800; letter-spacing: 0.25em;
+      color: #C6A35A;
+    }
+    .logo-brand span { color: #7A1A5C; }
+    .logo-sub {
+      font-size: 0.55rem; letter-spacing: 0.18em;
+      color: #2a2d35; text-transform: uppercase;
+    }
+    .form-wrap {
+      width: 100%;
+      border: 1px solid #181825;
+      background: #0c0c12;
+      padding: 1.8rem;
+      display: flex; flex-direction: column; gap: 1.2rem;
+    }
+    .form-label {
+      font-size: 0.55rem; letter-spacing: 0.14em;
+      color: #5c6370; text-transform: uppercase; margin-bottom: 0.4rem;
+    }
+    .form-input {
+      width: 100%; background: #050507;
+      border: 1px solid #181825; color: #d8dae0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; padding: 0.6rem 0.8rem;
+      outline: none; transition: border-color 0.15s;
+      letter-spacing: 0.05em;
+    }
+    .form-input:focus { border-color: #7A1A5C; }
+    .form-input.error { border-color: #ff1744; }
+    .form-btn {
+      width: 100%; background: #7A1A5C;
+      border: none; color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.18em;
+      padding: 0.7rem; cursor: pointer;
+      text-transform: uppercase; transition: background 0.15s;
+    }
+    .form-btn:hover { background: #9a2a7a; }
+    .form-btn:disabled { background: #2a1a2a; color: #5c6370; cursor: default; }
+    .error-msg {
+      font-size: 0.58rem; color: #ff1744;
+      letter-spacing: 0.08em; text-align: center;
+      min-height: 1em;
+    }
+    .footer-note {
+      font-size: 0.48rem; color: #2a2d35;
+      letter-spacing: 0.08em; text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="gate">
+    <div class="logo">
+      <svg viewBox="0 0 100 112" xmlns="http://www.w3.org/2000/svg" height="36" width="auto">
+        <rect x="18" y="10" width="64" height="16" rx="2" fill="#C6A35A"/>
+        <polygon points="18,33 46,33 46,86 37,86 18,60" fill="#C6A35A"/>
+        <polygon points="54,33 82,33 82,60 63,86 54,86" fill="#C6A35A"/>
+        <polygon points="40,90 60,90 50,104" fill="#7A1A5C"/>
+      </svg>
+      <div class="logo-brand">TRIBUNE <span>TRADER</span></div>
+      <div class="logo-sub">Internal Access Only</div>
+    </div>
+
+    <div class="form-wrap">
+      <div>
+        <div class="form-label">Access Code</div>
+        <input
+          id="pwInput"
+          class="form-input"
+          type="password"
+          autocomplete="current-password"
+          autofocus
+          placeholder="Enter access code"
+        />
+      </div>
+      <div class="error-msg" id="errMsg"></div>
+      <button class="form-btn" id="submitBtn" onclick="attemptLogin()">ENTER</button>
+    </div>
+
+    <div class="footer-note">TRIBUNE INC. — NOT FOR PUBLIC DISTRIBUTION</div>
+  </div>
+
+  <script>
+    // SHA-256 of the access code (never store raw password)
+    const CORRECT_HASH = 'c5de52608db0d88bea465eace9c51da98aea945c7dd94542af8f1bc748294edd';
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+
+    async function attemptLogin() {
+      const btn = document.getElementById('submitBtn');
+      const input = document.getElementById('pwInput');
+      const errMsg = document.getElementById('errMsg');
+
+      btn.disabled = true;
+      btn.textContent = 'CHECKING...';
+      input.classList.remove('error');
+      errMsg.textContent = '';
+
+      const hash = await sha256(input.value);
+
+      if (hash === CORRECT_HASH) {
+        sessionStorage.setItem('tt_auth', 'granted');
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get('next') || '/';
+        window.location.replace(next);
+      } else {
+        input.classList.add('error');
+        errMsg.textContent = 'Incorrect access code.';
+        input.value = '';
+        input.focus();
+        btn.disabled = false;
+        btn.textContent = 'ENTER';
+      }
+    }
+
+    // Allow Enter key
+    document.getElementById('pwInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') attemptLogin();
+    });
+  </script>
+</body>
+</html>
