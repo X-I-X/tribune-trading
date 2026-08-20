@@ -471,7 +471,7 @@
 
   <!-- PHASE 1 DISCLOSURE BAR -->
   <div style="background:#1a0a00; border-bottom:1px solid #3a2000; padding:0 1rem; height:24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
-    <span style="font-family:var(--mono); font-size:0.55rem; color:#f5a623; letter-spacing:0.1em;">⚠ PHASE 1  -  DEMO MODE &nbsp;|&nbsp; NQ Chart: Live (TradingView) &nbsp;|&nbsp; Oscillator + Order Flow: Simulated data  -  S949 is proprietary, TickStrike live integration: Phase 2</span>
+    <span style="font-family:var(--mono); font-size:0.55rem; color:#f5a623; letter-spacing:0.1em;">⚠ PHASE 1  -  DEMO MODE &nbsp;|&nbsp; NQ Chart: Live (TradingView) &nbsp;|&nbsp; Oscillator: Live CMO from QQQ 5-min &nbsp;|&nbsp; Order Flow: Simulated — S949 proprietary · TickStrike: Phase 2</span>
     <span style="font-family:var(--mono); font-size:0.5rem; color:#5c4010; letter-spacing:0.08em;">NOT FINANCIAL ADVICE &nbsp;|&nbsp; TRIBUNE INC. INTERNAL</span>
   </div>
 
@@ -719,7 +719,7 @@
   <!-- STATUS BAR -->
   <div class="status-bar">
     <div class="status-item"><span class="dot dot-green"></span> Chart: Live via TradingView (ETF proxies -- CME futures require Pro)</div>
-    <div class="status-item"><span class="dot dot-amber"></span> Oscillator: Simulated (S949 proprietary)</div>
+    <div class="status-item"><span class="dot dot-green"></span> Oscillator: Live QQQ CMO (S949 proxy)</div>
     <div class="status-item"><span class="dot dot-amber"></span> Order Flow: Demo mode (TickStrike embed Phase 2)</div>
     <div class="status-item" style="margin-left:auto"><span id="lastUpdate">Last update: --:--:--</span></div>
     <div class="status-item">TRIBUNE TRADER  -  INTERNAL DEMO</div>
@@ -783,23 +783,32 @@
       const highs  = q.high.map((h, i)  => h ?? closes[i]);
       const lows   = q.low.map((l, i)   => l ?? closes[i]);
 
-      // Filter out nulls/zeros
-      const valid = ts.map((t, i) => ({ t, c: closes[i], h: highs[i], l: lows[i] }))
-                      .filter(b => b.c > 0 && b.h > 0 && b.l > 0);
-      if (valid.length < 5) throw new Error('insufficient data');
+      // All valid bars — may span 2 days (yesterday + today) for CMO warmup
+      const allValid = ts.map((t, i) => ({ t, c: closes[i], h: highs[i], l: lows[i] }))
+                         .filter(b => b.c > 0 && b.h > 0 && b.l > 0);
+      if (allValid.length < 5) throw new Error('insufficient data');
 
-      barTimestamps = valid.map(b => b.t);
-      priceData     = valid.map(b => b.c);
-      priceHighs    = valid.map(b => b.h);
-      priceLows     = valid.map(b => b.l);
+      // Compute CMO across full 2-day history so early session bars have proper warmup
+      // (CMO period=14 on 5-min bars needs 75 min of data; yesterday's closes provide that)
+      const allCloses = allValid.map(b => b.c);
+      const allOsc = computeCMO(allCloses, 14);
+      while (allOsc.length < allCloses.length) allOsc.unshift(0);
+
+      // Filter display to today's session only (UTC date match)
+      const todayUTC = new Date().toISOString().slice(0, 10); // e.g. "2026-08-20"
+      const todayPairs = allValid
+        .map((b, i) => ({ b, i }))
+        .filter(({ b }) => new Date(b.t).toISOString().slice(0, 10) === todayUTC);
+      if (todayPairs.length === 0) throw new Error('no today bars yet');
+
+      barTimestamps = todayPairs.map(({ b }) => b.t);
+      priceData     = todayPairs.map(({ b }) => b.c);
+      priceHighs    = todayPairs.map(({ b }) => b.h);
+      priceLows     = todayPairs.map(({ b }) => b.l);
+      oscData       = todayPairs.map(({ i }) => allOsc[i]);
       sessionHigh   = Math.max(...priceHighs);
       sessionLow    = Math.min(...priceLows);
       sessionOpen   = barTimestamps[0];
-
-      // Compute CMO oscillator from real closes (scale ±40)
-      oscData = computeCMO(priceData, 14);
-      // Pad front so length matches priceData (CMO loses first `period` bars)
-      while (oscData.length < priceData.length) oscData.unshift(0);
 
       marketIsLive = true;
       lastFetchTs = Date.now();
